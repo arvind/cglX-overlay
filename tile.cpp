@@ -86,7 +86,7 @@ void Tile::drawTile() {
 	glPopMatrix();
 }
 
-void Tile::updateTransformations(GLint state, GLint x, GLint y, GLint ox, GLint oy) {
+void Tile::updateTransformations(GLint state, GLint x, GLint y, GLint ox, GLint oy, GLfloat* boundingBox) {
 	int dx = ox - x;
 	int dy = y - oy;
 
@@ -95,7 +95,14 @@ void Tile::updateTransformations(GLint state, GLint x, GLint y, GLint ox, GLint 
 	switch (state) {
 		case PAN:
 			this->trans[0] -= dx / 100.0f;
+//			this->trans[0]  = this->trans[0] < boundingBox[0] ? boundingBox[0] :
+//			                      this->trans[0] > boundingBox[2] ? boundingBox[2] :
+//			                          this->trans[0];
+
 			this->trans[1] -= dy / 100.0f;
+//			this->trans[1]  = this->trans[1] < boundingBox[1] ? boundingBox[1] :
+//			                      this->trans[1] > boundingBox[3] ? boundingBox[3] :
+//			                          this->trans[1];
 		break;
 		case ROTATE:
 			this->rot[0] += (dy * 180.0f) / 500.0f;
@@ -106,7 +113,8 @@ void Tile::updateTransformations(GLint state, GLint x, GLint y, GLint ox, GLint 
 			clamp(this->rot[1]);
 		break;
 		case ZOOM:
-			this->trans[2] -= (dx + dy) / 100.0f;
+			this->dim[0]  *= (dx + dy) / 100.0f;
+			this->dim[1]  *= (dx + dy) / 100.0f;
 		break;
 	}
 

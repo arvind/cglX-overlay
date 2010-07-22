@@ -29,7 +29,8 @@ class Overlay {
 		void setOverlaySize(GLfloat new_w, GLfloat new_h);
 		void setOverlayPos(GLfloat new_x, GLfloat new_y);
 		void drawOverlay(void);
-		void getPosInOverlay(GLfloat normalized_x, GLfloat normalized_y, GLfloat * posInOverlay);
+		GLfloat * getPosInOverlay(GLfloat normalized_x, GLfloat normalized_y);
+		GLfloat * getBoundingBox(void);
 };
 
 

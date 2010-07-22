@@ -92,12 +92,14 @@ void Overlay::setOverlayPos(GLfloat new_x, GLfloat new_y) {
 }
 
 
-void Overlay::getPosInOverlay(GLfloat normalized_x, GLfloat normalized_y, GLfloat * posInOverlay) {
+GLfloat * Overlay::getPosInOverlay(GLfloat normalized_x, GLfloat normalized_y) {
 	// normalized (x, y) is (0, 0) at the top left and (1, 1) at the bottom right.
 	// this (x,y) is (0, 0) in the center of the overlay.
+    GLfloat posInOverlay[2];
+    GLfloat * boundingBox = this->getBoundingBox();
 
-	posInOverlay[0] = (this->x - (this->width / 2))  + (normalized_x * this->width);
-	posInOverlay[1] = (this->y + (this->height / 2));
+	posInOverlay[0] = (this->x - (this->width  / 2))  + (normalized_x * this->width);
+	posInOverlay[1] = this->y + (this->height / 2);
 
 	if(normalized_y < 0.5)
 		posInOverlay[1] += normalized_y * this->height;
@@ -107,4 +109,21 @@ void Overlay::getPosInOverlay(GLfloat normalized_x, GLfloat normalized_y, GLfloa
 
 	printf("x: %f y: %f width: %f height: %f\n", x, y, width, height);
 	printf("norm x: %f norm y: %f pos x: %f pos y: %f\n", normalized_x, normalized_y, posInOverlay[0], posInOverlay[1]);
+
+	return posInOverlay;
+}
+
+GLfloat* Overlay::getBoundingBox(void) {
+    // [0] - minX
+    // [1] - minY
+    // [2] - maxX
+    // [3] - maxY
+    GLfloat boundingBox[4];
+    boundingBox[0] = this->x - (this->width  / 2);
+    boundingBox[1] = this->y - (this->height / 2);
+
+    boundingBox[2] = this->x + (this->width  / 2);
+    boundingBox[3] = this->y + (this->height / 2);
+
+    return boundingBox;
 }

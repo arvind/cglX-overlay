@@ -86,10 +86,8 @@ void processMouseClick(bool isOverlay, GLint button, GLint button_state, GLint x
 //	GLfloat gl_y = -((GLfloat) y - (getHeadHeight() / 2)) / 100;
 //
 //  These coordinates are calculated relative to the overlay
-	GLfloat posInOverlay[2];
-	overlay->getPosInOverlay((GLfloat) x / getHeadWidth(),
-							 (GLfloat) y / getHeadHeight(),
-							 posInOverlay);
+	GLfloat * posInOverlay = overlay->getPosInOverlay((GLfloat) x / getHeadWidth(),
+							 (GLfloat) y / getHeadHeight());
 
 	obj_iter it;
 	for(it = obj_list.begin(); it != obj_list.end(); it++) {
@@ -128,7 +126,10 @@ void handleMouseMove(GLint x, GLint y) {
 		mouse_x = x;
 		mouse_y = y;
 
-		(chosen_obj)->updateTransformations(state, mouse_x, mouse_y, omx, omy);
+		GLfloat* boundingBox = overlay->getBoundingBox();
+
+		if(chosen_obj != NULL)
+		    chosen_obj->updateTransformations(state, mouse_x, mouse_y, omx, omy, boundingBox);
 	}
 	cglXUpdateDone();
 
@@ -167,6 +168,11 @@ void handleSpecKeys(GLint key, GLint x, GLint y) {
 			overlay->setOverlaySize(overlay_w * 0.95, overlay_h * 0.95);
 			break;
 		}
+
+		GLfloat* boundingBox = overlay->getBoundingBox();
+
+        if(chosen_obj != NULL)
+            chosen_obj->updateTransformations(PAN, mouse_x, mouse_y, mouse_x, mouse_y, boundingBox);
 	}
 	cglXUpdateDone();
 
