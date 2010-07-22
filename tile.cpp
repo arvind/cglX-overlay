@@ -90,7 +90,7 @@ void Tile::updateTransformations(GLint state, GLfloat x, GLfloat y, GLfloat ox, 
 	GLfloat dx = x - ox;
 	GLfloat dy = y - oy ;
 
-//	printf("state: %d dx: %d dy: %d\t\t", state, dx, dy);
+//	printf("state: %d dx: %f dy: %f\t\t", state, dx, dy);
 
 	switch (state) {
 		case PAN:
@@ -104,18 +104,18 @@ void Tile::updateTransformations(GLint state, GLfloat x, GLfloat y, GLfloat ox, 
 //			                      this->y > boundingBox[3] ? boundingBox[3] :
 //			                          this->y;
 		break;
-		case ROTATE:
-			this->rot_x += (dy * 180.0f) / 500.0f;
-			this->rot_y -= (dx * 180.0f) / 500.0f;
+		case ZOOM:
+			this->width  *= 1 + (dx + dy);
+			this->height *= 1 + (dx + dy);
+		break;
+        case ROTATE:
+            this->rot_x += (dy * 180.0f) / 5.0f;
+            this->rot_y -= (dx * 180.0f) / 5.0f;
 
 #define clamp(x) x = x > 360.0f ? x-360.0f : x < -360.0f ? x+=360.0f : x
-			clamp(this->rot_x);
-			clamp(this->rot_y);
-		break;
-		case ZOOM:
-			this->width  *= (dx + dy) / 100.0f;
-			this->height  *= (dx + dy) / 100.0f;
-		break;
+            clamp(this->rot_x);
+            clamp(this->rot_y);
+        break;
 	}
 
 //	printf("x: %f y: %f\n", this->x, this->y);
