@@ -9,7 +9,8 @@ void init(void) {
 	obj_list.push_back(t1);
 	obj_list.push_back(t2);
 
-	overlay = new Overlay(-6.0f);
+	GLfloat overlay_color[3] = {1.0f, 0.0f, 0.0f};
+	overlay = new Overlay(0.0f, 0.0f, -6.0f, 2.0f, 1.4f, overlay_color);
 
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0);
 	glShadeModel(GL_SMOOTH);
@@ -58,59 +59,61 @@ void handleDisplay(void) {
 }
 
 void handleMouseClick(GLint button, GLint button_state, GLint x, GLint y) {
-	if (cglXStartUpdate())
-		processMouseClick(false, button, button_state, x, y);
+	if (cglXStartUpdate()) {
+	    mouse_x = x;
+	    mouse_y = y;
+
+	    if (button_state == GLUT_UP) {
+	        state = 0;
+	        if(chosen_obj != NULL) {
+	            chosen_obj->setSelected(false);
+	            chosen_obj = NULL;
+	        }
+	        overlay->removeFinger(0);
+	        return;
+	    }
+
+	//  These coordinates should be used to translate actual mouse coordinates
+	//  if the mouse is used on the head
+	//
+	//  GLfloat gl_x =  ((GLfloat) x - (getHeadWidth()  / 2)) / 100;
+	//  GLfloat gl_y = -((GLfloat) y - (getHeadHeight() / 2)) / 100;
+	//
+	//  These coordinates are calculated relative to the overlay
+	    GLfloat normalized_x = (GLfloat) x / getHeadWidth();
+	    GLfloat normalized_y = (GLfloat) y / getHeadHeight();
+	    overlay->addFinger(0, normalized_x, normalized_y, 0.05, 0.05);
+
+	    GLfloat posInOverlay[2];
+	    overlay->getPosOfFinger(0, posInOverlay);
+
+	    obj_iter it;
+	    for(it = obj_list.begin(); it != obj_list.end(); it++) {
+	//      if(it->intersects(gl_x, gl_y) && button_state == GLUT_DOWN) {
+	        if(it->intersects(posInOverlay[0], posInOverlay[1]) && button_state == GLUT_DOWN) {
+	            it->setSelected(true);
+
+	            // For overlapping images, push the selected image to the end
+	            // such that it renders "on top"
+	            obj_list.erase(it);
+	            obj_list.push_back(*it);
+
+	            chosen_obj = &*it;
+	        } else {
+	            it->setSelected(false);
+	        }
+	    }
+
+	    if (button == GLUT_LEFT_BUTTON)
+	        state |= PAN;
+
+	    if (button == GLUT_RIGHT_BUTTON)
+	        state |= ZOOM;
+	}
 
 	cglXUpdateDone();
 
 	glutPostRedisplay();
-}
-
-void processMouseClick(bool isOverlay, GLint button, GLint button_state, GLint x, GLint y) {
-	mouse_x = x;
-	mouse_y = y;
-
-	if (button_state == GLUT_UP) {
-		state = 0;
-		if(chosen_obj != NULL) {
-			chosen_obj->setSelected(false);
-			chosen_obj = NULL;
-		}
-		return;
-	}
-
-//	These coordinates should be used to translate actual mouse coordinates
-//  if the mouse is used on the head
-//
-//	GLfloat gl_x =  ((GLfloat) x - (getHeadWidth()  / 2)) / 100;
-//	GLfloat gl_y = -((GLfloat) y - (getHeadHeight() / 2)) / 100;
-//
-//  These coordinates are calculated relative to the overlay
-	GLfloat * posInOverlay = overlay->getPosInOverlay((GLfloat) x / getHeadWidth(),
-							 (GLfloat) y / getHeadHeight());
-
-	obj_iter it;
-	for(it = obj_list.begin(); it != obj_list.end(); it++) {
-//		if(it->intersects(gl_x, gl_y) && button_state == GLUT_DOWN) {
-		if(it->intersects(posInOverlay[0], posInOverlay[1]) && button_state == GLUT_DOWN) {
-			it->setSelected(true);
-
-			// For overlapping images, push the selected image to the end
-			// such that it renders "on top"
-			obj_list.erase(it);
-			obj_list.push_back(*it);
-
-			chosen_obj = &*it;
-		} else {
-			it->setSelected(false);
-		}
-	}
-
-	if (button == GLUT_LEFT_BUTTON)
-		state |= PAN;
-
-	if (button == GLUT_RIGHT_BUTTON)
-		state |= ZOOM;
 }
 
 void handleMouseMove(GLint x, GLint y) {
@@ -126,10 +129,15 @@ void handleMouseMove(GLint x, GLint y) {
 		mouse_x = x;
 		mouse_y = y;
 
-		GLfloat* boundingBox = overlay->getBoundingBox();
+        GLfloat normalized_x = (GLfloat) x / getHeadWidth();
+        GLfloat normalized_y = (GLfloat) y / getHeadHeight();
+        overlay->moveFinger(0, normalized_x, normalized_y);
+
+		GLfloat bounding_box[4];
+		overlay->getBoundingBox(bounding_box);
 
 		if(chosen_obj != NULL)
-		    chosen_obj->updateTransformations(state, mouse_x, mouse_y, omx, omy, boundingBox);
+		    chosen_obj->updateTransformations(state, mouse_x, mouse_y, omx, omy, bounding_box);
 	}
 	cglXUpdateDone();
 
@@ -169,10 +177,11 @@ void handleSpecKeys(GLint key, GLint x, GLint y) {
 			break;
 		}
 
-		GLfloat* boundingBox = overlay->getBoundingBox();
+        GLfloat bounding_box[4];
+        overlay->getBoundingBox(bounding_box);
 
         if(chosen_obj != NULL)
-            chosen_obj->updateTransformations(PAN, mouse_x, mouse_y, mouse_x, mouse_y, boundingBox);
+            chosen_obj->updateTransformations(PAN, mouse_x, mouse_y, mouse_x, mouse_y, bounding_box);
 	}
 	cglXUpdateDone();
 

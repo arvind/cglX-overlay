@@ -90,7 +90,7 @@ void Tile::updateTransformations(GLint state, GLint x, GLint y, GLint ox, GLint 
 	int dx = ox - x;
 	int dy = y - oy;
 
-	printf("state: %d dx: %d dy: %d\t\t", state, dx, dy);
+//	printf("state: %d dx: %d dy: %d\t\t", state, dx, dy);
 
 	switch (state) {
 		case PAN:
@@ -118,13 +118,13 @@ void Tile::updateTransformations(GLint state, GLint x, GLint y, GLint ox, GLint 
 		break;
 	}
 
-	printf("x: %f y: %f\n", this->x, this->y);
+//	printf("x: %f y: %f\n", this->x, this->y);
 
 }
 
 bool Tile::intersects(GLfloat mouse_x, GLfloat mouse_y) {
-	printf("\n\nfilename: %s\nmouse_x: %f x: %f width: %f\nmouse_y: %f y: %f height: %f",
-			filename, mouse_x, x, width, mouse_y, y, height);
+//	printf("\n\nfilename: %s\nmouse_x: %f x: %f width: %f\nmouse_y: %f y: %f height: %f",
+//			filename, mouse_x, x, width, mouse_y, y, height);
 
 	if(mouse_x > this->x - (this->width / 2) && mouse_x < this->x + (this->width / 2) &&
 	   mouse_y > this->y - (this->height / 2) && mouse_y < this->y + (this->height / 2))
