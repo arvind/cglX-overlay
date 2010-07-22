@@ -24,14 +24,14 @@ class Tile {
 		GLuint  texture;
 		char *  filename;
 
-		GLfloat dim[2];		// Dimension
-		GLfloat trans[3];	// Translation
-		GLfloat rot[2];		// Rotation
+		GLfloat x, y, z;       // Translation
+		GLfloat width, height; // Dimensions
+		GLfloat rot_x, rot_y;  // Rotation
 
 		bool is_selected;
 
 	public:
-		Tile(char * filename, float trans_x, float trans_y, float trans_z, float dim_x, float dim_y);
+		Tile(char * filename, float x, float y, float z, float width, float height);
 
 		void loadTextures();
 		void drawTile();

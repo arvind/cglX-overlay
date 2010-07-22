@@ -12,15 +12,15 @@
 Tile::Tile(char * f, float trans_x, float trans_y, float trans_z, float dim_x, float dim_y) {
 	this->filename = f;
 
-	this->trans[0] = trans_x;
-	this->trans[1] = trans_y;
-	this->trans[2] = trans_z;
+	this->x = trans_x;
+	this->y = trans_y;
+	this->z = trans_z;
 
-	this->dim[0]   = dim_x;
-	this->dim[1]   = dim_y;
+	this->width   = dim_x;
+	this->height   = dim_y;
 
-	this->rot[0]   = 0;
-	this->rot[1]   = 0;
+	this->rot_x   = 0;
+	this->rot_y   = 0;
 
 	this->is_selected = false;
 
@@ -45,12 +45,12 @@ void Tile::drawTile() {
 	glPushMatrix();
 	glLoadIdentity();
 
-	glTranslatef(this->trans[0], this->trans[1], this->trans[2]);
-	glRotatef(this->rot[0], 1.0f, 0.0f, 0.0f);
-	glRotatef(this->rot[1], 0.0f, 1.0f, 0.0f);
+	glTranslatef(this->x, this->y, this->z);
+	glRotatef(this->rot_x, 1.0f, 0.0f, 0.0f);
+	glRotatef(this->rot_y, 0.0f, 1.0f, 0.0f);
 
-	GLfloat dim_x = this->dim[0] / 2;
-	GLfloat dim_y = this->dim[1] / 2;
+	GLfloat dim_x = this->width / 2;
+	GLfloat dim_y = this->height / 2;
 
 	glColor4f(1.0, 1.0, 1.0, 1.0);
 	glEnable(GL_BLEND);
@@ -94,40 +94,40 @@ void Tile::updateTransformations(GLint state, GLint x, GLint y, GLint ox, GLint 
 
 	switch (state) {
 		case PAN:
-			this->trans[0] -= dx / 100.0f;
-//			this->trans[0]  = this->trans[0] < boundingBox[0] ? boundingBox[0] :
-//			                      this->trans[0] > boundingBox[2] ? boundingBox[2] :
-//			                          this->trans[0];
+			this->x -= dx / 100.0f;
+//			this->x  = this->x < boundingBox[0] ? boundingBox[0] :
+//			                      this->x > boundingBox[2] ? boundingBox[2] :
+//			                          this->x;
 
-			this->trans[1] -= dy / 100.0f;
-//			this->trans[1]  = this->trans[1] < boundingBox[1] ? boundingBox[1] :
-//			                      this->trans[1] > boundingBox[3] ? boundingBox[3] :
-//			                          this->trans[1];
+			this->y -= dy / 100.0f;
+//			this->y  = this->y < boundingBox[1] ? boundingBox[1] :
+//			                      this->y > boundingBox[3] ? boundingBox[3] :
+//			                          this->y;
 		break;
 		case ROTATE:
-			this->rot[0] += (dy * 180.0f) / 500.0f;
-			this->rot[1] -= (dx * 180.0f) / 500.0f;
+			this->rot_x += (dy * 180.0f) / 500.0f;
+			this->rot_y -= (dx * 180.0f) / 500.0f;
 
 #define clamp(x) x = x > 360.0f ? x-360.0f : x < -360.0f ? x+=360.0f : x
-			clamp(this->rot[0]);
-			clamp(this->rot[1]);
+			clamp(this->rot_x);
+			clamp(this->rot_y);
 		break;
 		case ZOOM:
-			this->dim[0]  *= (dx + dy) / 100.0f;
-			this->dim[1]  *= (dx + dy) / 100.0f;
+			this->width  *= (dx + dy) / 100.0f;
+			this->height  *= (dx + dy) / 100.0f;
 		break;
 	}
 
-	printf("trans[0]: %f trans[1]: %f\n", trans[0], trans[1]);
+	printf("x: %f y: %f\n", this->x, this->y);
 
 }
 
 bool Tile::intersects(GLfloat mouse_x, GLfloat mouse_y) {
-	printf("\n\nfilename: %s\nmouse_x: %f trans[0]: %f dim[0]: %f\nmouse_y: %f trans[1]: %f dim[1]: %f",
-			filename, mouse_x, trans[0], dim[0], mouse_y, trans[1], dim[1]);
+	printf("\n\nfilename: %s\nmouse_x: %f x: %f width: %f\nmouse_y: %f y: %f height: %f",
+			filename, mouse_x, x, width, mouse_y, y, height);
 
-	if(mouse_x > this->trans[0] - (this->dim[0] / 2) && mouse_x < this->trans[0] + (this->dim[0] / 2) &&
-	   mouse_y > this->trans[1] - (this->dim[1] / 2) && mouse_y < this->trans[1] + (this->dim[1] / 2))
+	if(mouse_x > this->x - (this->width / 2) && mouse_x < this->x + (this->width / 2) &&
+	   mouse_y > this->y - (this->height / 2) && mouse_y < this->y + (this->height / 2))
 			return true;
 
 	return false;
