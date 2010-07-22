@@ -144,6 +144,9 @@ void handleSpecKeys(GLint key, GLint x, GLint y) {
 	GLfloat overlay_h = overlay->getHeight();
 
 	if (cglXStartUpdate()) {
+        GLfloat oldPosition[2];
+        overlay->getPosOfFinger(0, oldPosition);
+
 		switch (key) {
 		case GLUT_KEY_LEFT:
 			overlay->setOverlayPos(overlay_x - 0.1f, overlay_y);
@@ -170,12 +173,12 @@ void handleSpecKeys(GLint key, GLint x, GLint y) {
 			break;
 		}
 
-        GLfloat fingerPosition[2];
-        overlay->getPosOfFinger(0, fingerPosition);
+        GLfloat newPosition[2];
+        overlay->getPosOfFinger(0, newPosition);
 
         if(chosen_obj != NULL)
-            chosen_obj->updateTransformations(PAN, fingerPosition[0], fingerPosition[1],
-                                                    fingerPosition[0], fingerPosition[1]);
+            chosen_obj->updateTransformations(PAN, newPosition[0], newPosition[1],
+                                                   oldPosition[0], oldPosition[1]);
 	}
 	cglXUpdateDone();
 
