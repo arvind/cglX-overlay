@@ -60,9 +60,6 @@ void handleDisplay(void) {
 
 void handleMouseClick(GLint button, GLint button_state, GLint x, GLint y) {
 	if (cglXStartUpdate()) {
-	    mouse_x = x;
-	    mouse_y = y;
-
 	    if (button_state == GLUT_UP) {
 	        state = 0;
 	        if(chosen_obj != NULL) {
@@ -121,23 +118,19 @@ void handleMouseMove(GLint x, GLint y) {
 		if (state == 0 || chosen_obj == NULL)
 			return;
 
-		GLint omx, omy;
-
-		omx = mouse_x;
-		omy = mouse_y;
-
-		mouse_x = x;
-		mouse_y = y;
+        GLfloat oldPosition[2];
+        overlay->getPosOfFinger(0, oldPosition);
 
         GLfloat normalized_x = (GLfloat) x / getHeadWidth();
         GLfloat normalized_y = (GLfloat) y / getHeadHeight();
         overlay->moveFinger(0, normalized_x, normalized_y);
 
-		GLfloat bounding_box[4];
-		overlay->getBoundingBox(bounding_box);
+        GLfloat newPosition[2];
+        overlay->getPosOfFinger(0, newPosition);
 
 		if(chosen_obj != NULL)
-		    chosen_obj->updateTransformations(state, mouse_x, mouse_y, omx, omy, bounding_box);
+		    chosen_obj->updateTransformations(state, newPosition[0], newPosition[1],
+		                                             oldPosition[0], oldPosition[1]);
 	}
 	cglXUpdateDone();
 
@@ -177,11 +170,12 @@ void handleSpecKeys(GLint key, GLint x, GLint y) {
 			break;
 		}
 
-        GLfloat bounding_box[4];
-        overlay->getBoundingBox(bounding_box);
+        GLfloat fingerPosition[2];
+        overlay->getPosOfFinger(0, fingerPosition);
 
         if(chosen_obj != NULL)
-            chosen_obj->updateTransformations(PAN, mouse_x, mouse_y, mouse_x, mouse_y, bounding_box);
+            chosen_obj->updateTransformations(PAN, fingerPosition[0], fingerPosition[1],
+                                                    fingerPosition[0], fingerPosition[1]);
 	}
 	cglXUpdateDone();
 

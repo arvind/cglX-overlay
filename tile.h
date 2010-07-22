@@ -35,7 +35,7 @@ class Tile {
 
 		void loadTextures();
 		void drawTile();
-		void updateTransformations(GLint state, GLint x, GLint y, GLint ox, GLint oy, GLfloat* boundingBox);
+		void updateTransformations(GLint state, GLfloat x, GLfloat y, GLfloat ox, GLfloat oy);
 		bool intersects(GLfloat mouse_x, GLfloat mouse_y);
 
 		void setSelected(bool s);

@@ -6,7 +6,6 @@ Overlay::Overlay(GLfloat x, GLfloat y, GLfloat z, GLfloat w, GLfloat h, GLfloat 
 	this->color[0] = color[0];
 	this->color[1] = color[1];
 	this->color[2] = color[2];
-//	this->drawOverlay();
 }
 
 GLfloat Overlay::getX() {
@@ -194,8 +193,6 @@ void Overlay::Finger::drawFinger() {
     GLfloat posInOverlay[2];
     this->getPosInOverlay(posInOverlay);
 
-//    printf("center_x: %f center_y: %f\n", center_x, center_y);
-
     this->drawOval(posInOverlay[0], posInOverlay[1], this->width, this->height, 10);
 }
 
@@ -207,6 +204,14 @@ void Overlay::Finger::getPosInOverlay(GLfloat * posInOverlay) {
 
     posInOverlay[0] = bounding_box[0] + (this->x * this->overlay->width);
     posInOverlay[1] = bounding_box[3] - (this->y * this->overlay->height);
+
+    posInOverlay[0] = posInOverlay[0] < bounding_box[0] ? bounding_box[0] :
+                        posInOverlay[0] > bounding_box[2] ? bounding_box[2] :
+                            posInOverlay[0];
+
+    posInOverlay[1] = posInOverlay[1] < bounding_box[1] ? bounding_box[1] :
+                        posInOverlay[1] > bounding_box[3] ? bounding_box[3] :
+                            posInOverlay[1];
 
 //    printf("x: %f y: %f width: %f height: %f\n", x, y, width, height);
 //    printf("norm x: %f norm y: %f pos x: %f pos y: %f\n", this->x, this->y, posInOverlay[0], posInOverlay[1]);

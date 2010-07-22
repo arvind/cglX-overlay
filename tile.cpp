@@ -86,20 +86,20 @@ void Tile::drawTile() {
 	glPopMatrix();
 }
 
-void Tile::updateTransformations(GLint state, GLint x, GLint y, GLint ox, GLint oy, GLfloat* boundingBox) {
-	int dx = ox - x;
-	int dy = y - oy;
+void Tile::updateTransformations(GLint state, GLfloat x, GLfloat y, GLfloat ox, GLfloat oy) {
+	GLfloat dx = x - ox;
+	GLfloat dy = y - oy ;
 
 //	printf("state: %d dx: %d dy: %d\t\t", state, dx, dy);
 
 	switch (state) {
 		case PAN:
-			this->x -= dx / 100.0f;
+			this->x += dx;
 //			this->x  = this->x < boundingBox[0] ? boundingBox[0] :
 //			                      this->x > boundingBox[2] ? boundingBox[2] :
 //			                          this->x;
 
-			this->y -= dy / 100.0f;
+			this->y += dy;
 //			this->y  = this->y < boundingBox[1] ? boundingBox[1] :
 //			                      this->y > boundingBox[3] ? boundingBox[3] :
 //			                          this->y;
@@ -119,7 +119,6 @@ void Tile::updateTransformations(GLint state, GLint x, GLint y, GLint ox, GLint 
 	}
 
 //	printf("x: %f y: %f\n", this->x, this->y);
-
 }
 
 bool Tile::intersects(GLfloat mouse_x, GLfloat mouse_y) {
