@@ -27,7 +27,7 @@ void handleReshape(GLint w, GLint h) {
 
 	ratio = 1.0f * w / h;
 	// Reset the coordinate system before modifying
-	glMatrixMode( GL_PROJECTION);
+	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
 	// Set the viewport to be the entire window
@@ -188,15 +188,6 @@ void handleSpecKeys(GLint key, GLint x, GLint y) {
 	glutPostRedisplay();
 }
 
-void handleXEvent(XEvent * event) {
-	if (cglXStartUpdate()) {
-		printf("event type: %p\n", event);
-	}
-	cglXUpdateDone();
-
-	glutPostRedisplay();
-}
-
 int main(int argc, char** argv) {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
@@ -210,7 +201,6 @@ int main(int argc, char** argv) {
 	glutMouseFunc(handleMouseClick);
 	glutMotionFunc(handleMouseMove);
 	glutSpecialFunc(handleSpecKeys);
-	//cglXXEventFunc(handleXEvent);
 	glutMainLoop();
 	return 0; // ANSI C requires main to return int.
 }
