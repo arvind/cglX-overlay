@@ -48,8 +48,7 @@ void handleDisplay(void) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	obj_iter it;
-	int i = 0;
-	for(it = obj_list.begin(); it != obj_list.end(); it++, i++)
+	for(it = obj_list.begin(); it != obj_list.end(); it++)
 		it->drawTile();
 
 	overlay->drawOverlay();
@@ -62,20 +61,16 @@ void handleMouseClick(GLint button, GLint button_state, GLint x, GLint y) {
 	if (cglXStartUpdate()) {
 	    if (button_state == GLUT_UP) {
 	        state = 0;
-	        if(chosen_obj != NULL) {
-	            chosen_obj->setSelected(false);
-	            chosen_obj = NULL;
-	        }
 	        overlay->removeFinger(0);
 	        return;
 	    }
 
-	//  These coordinates should be used to translate actual mouse coordinates
-	//  if the mouse is used on the head
-	//
-	//  GLfloat gl_x =  ((GLfloat) x - (getHeadWidth()  / 2)) / 100;
-	//  GLfloat gl_y = -((GLfloat) y - (getHeadHeight() / 2)) / 100;
-	//
+        if (button == GLUT_LEFT_BUTTON)
+            state |= PAN;
+
+        if (button == GLUT_RIGHT_BUTTON)
+            state |= ZOOM;
+
 	//  These coordinates are calculated relative to the overlay
 	    GLfloat normalized_x = (GLfloat) x / getHeadWidth();
 	    GLfloat normalized_y = (GLfloat) y / getHeadHeight();
@@ -84,28 +79,26 @@ void handleMouseClick(GLint button, GLint button_state, GLint x, GLint y) {
 	    GLfloat posInOverlay[2];
 	    overlay->getPosOfFinger(0, posInOverlay);
 
+	    GLint modifiers = glutGetModifiers();
+
 	    obj_iter it;
+        for(it = obj_list.begin(); it != obj_list.end(); it++)
+            if(!(modifiers & GLUT_ACTIVE_CTRL))
+                it->setSelected(false);
+
 	    for(it = obj_list.begin(); it != obj_list.end(); it++) {
-	//      if(it->intersects(gl_x, gl_y) && button_state == GLUT_DOWN) {
 	        if(it->intersects(posInOverlay[0], posInOverlay[1]) && button_state == GLUT_DOWN) {
-	            it->setSelected(true);
+	            if(modifiers & GLUT_ACTIVE_CTRL)
+	                it->toggleSelected();
+	            else
+	                it->setSelected(true);
 
 	            // For overlapping images, push the selected image to the end
 	            // such that it renders "on top"
 	            obj_list.erase(it);
 	            obj_list.push_back(*it);
-
-	            chosen_obj = &*it;
-	        } else {
-	            it->setSelected(false);
 	        }
 	    }
-
-	    if (button == GLUT_LEFT_BUTTON)
-	        state |= PAN;
-
-	    if (button == GLUT_RIGHT_BUTTON)
-	        state |= ZOOM;
 	}
 
 	cglXUpdateDone();
@@ -115,7 +108,7 @@ void handleMouseClick(GLint button, GLint button_state, GLint x, GLint y) {
 
 void handleMouseMove(GLint x, GLint y) {
 	if (cglXStartUpdate()) {
-		if (state == 0 || chosen_obj == NULL)
+		if (state == 0)
 			return;
 
         GLfloat oldPosition[2];
@@ -128,9 +121,12 @@ void handleMouseMove(GLint x, GLint y) {
         GLfloat newPosition[2];
         overlay->getPosOfFinger(0, newPosition);
 
-		if(chosen_obj != NULL)
-		    chosen_obj->updateTransformations(state, newPosition[0], newPosition[1],
-		                                             oldPosition[0], oldPosition[1]);
+        obj_iter it;
+        for(it = obj_list.begin(); it != obj_list.end(); it++)
+            if(it->isSelected())
+                it->updateTransformations(state, newPosition[0], newPosition[1],
+		                                         oldPosition[0], oldPosition[1]);
+
 	}
 	cglXUpdateDone();
 
@@ -176,9 +172,12 @@ void handleSpecKeys(GLint key, GLint x, GLint y) {
         GLfloat newPosition[2];
         overlay->getPosOfFinger(0, newPosition);
 
-        if(chosen_obj != NULL)
-            chosen_obj->updateTransformations(PAN, newPosition[0], newPosition[1],
-                                                   oldPosition[0], oldPosition[1]);
+        obj_iter it;
+        for(it = obj_list.begin(); it != obj_list.end(); it++)
+            if(it->isSelected())
+                it->updateTransformations(state, newPosition[0], newPosition[1],
+                                                 oldPosition[0], oldPosition[1]);
+
 	}
 	cglXUpdateDone();
 

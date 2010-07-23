@@ -20,7 +20,7 @@
 #define TILE_H_
 
 class Tile {
-	public:
+	private:
 		GLuint  texture;
 		char *  filename;
 
@@ -39,6 +39,8 @@ class Tile {
 		bool intersects(GLfloat mouse_x, GLfloat mouse_y);
 
 		void setSelected(bool s);
+		void toggleSelected();
+		bool isSelected();
 };
 
 #endif /* TILE_H_ */

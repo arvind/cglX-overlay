@@ -38,7 +38,6 @@ typedef std::list<Tile>::reverse_iterator reverse_obj_iter;
 #define ROTATE                  3
 
 static int state;
-static Tile * chosen_obj;
 
 void init(void);
 void handleReshape(GLint w, GLint h);

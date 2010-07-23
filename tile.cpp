@@ -135,3 +135,11 @@ bool Tile::intersects(GLfloat mouse_x, GLfloat mouse_y) {
 void Tile::setSelected(bool s) {
 	this->is_selected = s;
 }
+
+void Tile::toggleSelected() {
+    this->setSelected(!this->is_selected);
+}
+
+bool Tile::isSelected() {
+    return this->is_selected;
+}
