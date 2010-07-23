@@ -5,7 +5,16 @@
  *      Author: root
  */
 
-#include "main.h";
+#ifdef DEF_USE_CGLX
+#ifdef __APPLE__
+    #include <cglX/cglX.h>
+#else
+    #include "cglX.h"
+#endif
+    using namespace cglx;
+#else
+    #include <GL/glut.h>
+#endif
 #include "tile.h";
 #include "bmp.h";
 

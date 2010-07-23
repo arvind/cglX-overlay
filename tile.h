@@ -5,19 +5,13 @@
  *      Author: root
  */
 
-#ifdef DEF_USE_CGLX
-#ifdef __APPLE__
-	#include <cglX/cglX.h>
-#else
-	#include "cglX.h"
-#endif
-	using namespace cglx;
-#else
-	#include <GL/glut.h>
-#endif
-
 #ifndef TILE_H_
 #define TILE_H_
+
+// States //
+#define PAN                     1
+#define ZOOM                    2
+#define ROTATE                  3
 
 class Tile {
 	private:

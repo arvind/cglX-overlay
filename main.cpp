@@ -1,4 +1,29 @@
+#ifdef DEF_USE_CGLX
+    #ifdef __APPLE__
+        #include <cglX/cglX.h>
+    #else
+        #include "cglX.h"
+    #endif
+    using namespace cglx;
+#else
+    #include <GL/glut.h>
+#endif
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <list>
+#include "bmp.h"
+#include "overlay.h"
+#include "tile.h"
 #include "main.h"
+
+static Overlay * overlay;
+
+static std::list<Tile> obj_list;
+typedef std::list<Tile>::iterator obj_iter;
+typedef std::list<Tile>::reverse_iterator reverse_obj_iter;
+
+static int state;
 
 void init(void) {
 	Tile t0("Data/0.bmp", -1.5f, -1.2f, -6.0f, 2.0, 2.0);

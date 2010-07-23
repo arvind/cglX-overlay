@@ -1,3 +1,13 @@
+#ifdef DEF_USE_CGLX
+#ifdef __APPLE__
+    #include <cglX/cglX.h>
+#else
+    #include "cglX.h"
+#endif
+    using namespace cglx;
+#else
+    #include <GL/glut.h>
+#endif
 #include "overlay.h";
 
 Overlay::Overlay(GLfloat x, GLfloat y, GLfloat z, GLfloat w, GLfloat h, GLfloat * color) {

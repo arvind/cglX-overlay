@@ -1,17 +1,8 @@
-#ifdef DEF_USE_CGLX
-#ifdef __APPLE__
-	#include <cglX/cglX.h>
-#else
-	#include "cglX.h"
-#endif
-	using namespace cglx;
-#else
-	#include <GL/glut.h>
-#endif
+#ifndef OVERLAY_H_
+#define OVERLAY_H_
+
 #include <utility>
 #include <map>
-#include <cmath>
-
 #define PI_2 3.14159*2
 
 class Overlay {
@@ -60,6 +51,6 @@ class Overlay {
 		void getPosOfFinger(GLint id, GLfloat * posInOverlay);
 };
 
-
+#endif /* OVERLAY_H_ */
 
 
