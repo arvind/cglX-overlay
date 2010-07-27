@@ -12,10 +12,9 @@ void init(void);
 void handleReshape(GLint w, GLint h);
 void handleDisplay(void);
 void handleMouseClick(GLint button, GLint button_state, GLint x, GLint y);
-void processMouseClick(bool overlay, GLint button, GLint button_state, GLint x, GLint y);
 void handleMouseMove(GLint x, GLint y);
 void handleSpecKeys(GLint key, GLint x, GLint y);
-void handleXEvent(XEvent * event);
+void handleCustomMsg(int len, char *msg);
 int main(int argc, char** argv);
 
 #endif /* MAIN_H_ */
