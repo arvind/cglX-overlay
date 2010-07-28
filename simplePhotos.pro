@@ -74,7 +74,7 @@ linux-g++ {
 # ---------------------------------------------------------------------------
 linux-g++-64 {
 	QT			-= gui core
-	LIBS		+= -L/usr/local/lib64 -L/usr/local/lib -L/usr/lib64 -L../../cglXlib/lib/ -lgd -lGLEW -lcglX -ltiff
+	LIBS		+= -L/usr/local/lib64 -L/usr/local/lib -L/usr/lib64 -L../../cglXlib/lib/ -lgd -lGLEW -lcglX -ltiff  -ljson_libmt
 	INCLUDEPATH	+= /usr/local/include /usr/include/GL ../../cglXlib/include  /usr/include/freetype2
 	
 	# install binary

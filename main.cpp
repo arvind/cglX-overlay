@@ -11,7 +11,9 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <list>
+#include <list.h>
+#include <string.h>
+#include <json/json.h>
 #include "bmp.h"
 #include "overlay.h"
 #include "tile.h"
@@ -21,7 +23,6 @@ static Overlay * overlay;
 
 static std::list<Tile> obj_list;
 typedef std::list<Tile>::iterator obj_iter;
-typedef std::list<Tile>::reverse_iterator reverse_obj_iter;
 
 static int state;
 
@@ -34,7 +35,7 @@ void init(void) {
 	obj_list.push_back(t1);
 	obj_list.push_back(t2);
 
-	GLfloat overlay_color[3] = {1.0f, 0.0f, 0.0f};
+	GLfloat overlay_color[3] = {0.0f, 1.0f, 0.0f};
 	overlay = new Overlay(0.0f, 0.0f, -6.0f, 2.0f, 1.4f, overlay_color);
 
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0);
@@ -209,6 +210,42 @@ void handleSpecKeys(GLint key, GLint x, GLint y) {
 	glutPostRedisplay();
 }
 
+void handleCustomMsg(int len, char *msg) {
+    if (cglXStartUpdate()) {
+        GLfloat overlay_w = overlay->getWidth();
+        GLfloat overlay_h = overlay->getHeight();
+
+        Json::Value root;
+        Json::Reader reader;
+        bool parsingSuccessful = reader.parse( msg, root );
+        if ( !parsingSuccessful ) {
+            printf("Failed to parse configuration\n");
+            printf("%s\n", reader.getFormatedErrorMessages());
+            return;
+        }
+
+        std::string event = root.get("event", "UTF-8").asString();
+        if(event.compare("OVERLAY_MOVE")) {
+            double normalized_x = root.get("normalizedX", "UTF-8").asDouble();
+            double normalized_y = root.get("normalizedY", "UTF-8").asDouble();
+
+            GLfloat overlay_x = ((normalized_x * getHeadWidth())  - (getHeadWidth()  / 2)) / 100.0f;
+            GLfloat overlay_y = ((normalized_y * getHeadHeight()) - (getHeadHeight() / 2)) / 100.0f;
+
+            overlay->setOverlayPos(overlay_x, overlay_y);
+        } else if(event.compare("OVERLAY_SCALE")) {
+            double scale_factor = root.get("scaleFactor", "UTF-8").asDouble();
+            scale_factor = scale_factor + 1;
+
+            overlay->setOverlaySize(overlay_w * scale_factor, overlay_h * scale_factor);
+        }
+
+    }
+    cglXUpdateDone();
+
+    glutPostRedisplay();
+}
+
 int main(int argc, char** argv) {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
@@ -222,6 +259,7 @@ int main(int argc, char** argv) {
 	glutMouseFunc(handleMouseClick);
 	glutMotionFunc(handleMouseMove);
 	glutSpecialFunc(handleSpecKeys);
+	cglXCustomMsgFunc(handleCustomMsg);
 	glutMainLoop();
 	return 0; // ANSI C requires main to return int.
 }
