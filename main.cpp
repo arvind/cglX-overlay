@@ -35,7 +35,7 @@ void init(void) {
 	obj_list.push_back(t1);
 	obj_list.push_back(t2);
 
-	GLfloat overlay_color[3] = {0.0f, 1.0f, 0.0f};
+	GLfloat overlay_color[3] = {1.0f, 0.0f, 0.0f};
 	overlay = new Overlay(0.0f, 0.0f, -6.0f, 2.0f, 1.4f, overlay_color);
 
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0);
@@ -215,6 +215,8 @@ void handleCustomMsg(int len, char *msg) {
         GLfloat overlay_w = overlay->getWidth();
         GLfloat overlay_h = overlay->getHeight();
 
+        printf("Message: %s\n", msg);
+
         Json::Value root;
         Json::Reader reader;
         bool parsingSuccessful = reader.parse( msg, root );
@@ -224,17 +226,21 @@ void handleCustomMsg(int len, char *msg) {
             return;
         }
 
-        std::string event = root.get("event", "UTF-8").asString();
-        if(event.compare("OVERLAY_MOVE")) {
-            double normalized_x = root.get("normalizedX", "UTF-8").asDouble();
-            double normalized_y = root.get("normalizedY", "UTF-8").asDouble();
+        std::string event = root["event"].asString();
+        std::string overlayID = root["overlayID"].asString();
+
+        if(event.compare("OVERLAY_MOVE") == 0) {
+            printf("We're moving the overlay! \n\n");
+
+            double normalized_x = root["normalizedX"].asDouble();
+            double normalized_y = root["normalizedY"].asDouble();
 
             GLfloat overlay_x = ((normalized_x * getHeadWidth())  - (getHeadWidth()  / 2)) / 100.0f;
-            GLfloat overlay_y = ((normalized_y * getHeadHeight()) - (getHeadHeight() / 2)) / 100.0f;
+            GLfloat overlay_y = -((normalized_y * getHeadHeight()) - (getHeadHeight() / 2)) / 100.0f;
 
             overlay->setOverlayPos(overlay_x, overlay_y);
-        } else if(event.compare("OVERLAY_SCALE")) {
-            double scale_factor = root.get("scaleFactor", "UTF-8").asDouble();
+        } else if(event.compare("OVERLAY_SCALE") == 0) {
+            double scale_factor = root["scaleFactor"].asDouble();
             scale_factor = scale_factor + 1;
 
             overlay->setOverlaySize(overlay_w * scale_factor, overlay_h * scale_factor);
