@@ -215,8 +215,6 @@ void handleCustomMsg(int len, char *msg) {
         GLfloat overlay_w = overlay->getWidth();
         GLfloat overlay_h = overlay->getHeight();
 
-        printf("Message: %s\n", msg);
-
         Json::Value root;
         Json::Reader reader;
         bool parsingSuccessful = reader.parse( msg, root );
@@ -230,8 +228,6 @@ void handleCustomMsg(int len, char *msg) {
         std::string overlayID = root["overlayID"].asString();
 
         if(event.compare("OVERLAY_MOVE") == 0) {
-            printf("We're moving the overlay! \n\n");
-
             double normalized_x = root["normalizedX"].asDouble();
             double normalized_y = root["normalizedY"].asDouble();
 
