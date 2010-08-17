@@ -14,7 +14,7 @@
 #define ROTATE                  3
 
 class Tile {
-	private:
+	public:
 		GLuint  texture;
 		char *  filename;
 

@@ -106,24 +106,27 @@ void handleMouseClick(GLint button, GLint button_state, GLint x, GLint y) {
 	    overlay->getPosOfFinger(0, posInOverlay);
 
 	    GLint modifiers = glutGetModifiers();
-	    obj_iter it;
-        for(it = obj_list.begin(); it != obj_list.end(); it++)
-            if(!(modifiers & GLUT_ACTIVE_CTRL))
-                it->setSelected(false);
 
+	    obj_iter it, intersected_tile;
 	    for(it = obj_list.begin(); it != obj_list.end(); it++) {
 	        if(it->intersects(posInOverlay[0], posInOverlay[1]) && button_state == GLUT_DOWN) {
+	            printf("intersected %s\n", it->filename);
 	            if(modifiers & GLUT_ACTIVE_CTRL)
 	                it->toggleSelected();
 	            else
 	                it->setSelected(true);
 
-	            // For overlapping images, push the selected image to the end
-	            // such that it renders "on top"
-	            obj_list.erase(it);
-	            obj_list.push_back(*it);
+	            intersected_tile = it;
+	        } else {
+	            printf("didn't intersected %s\n", it->filename);
+	            if((modifiers & GLUT_ACTIVE_CTRL) == 0)
+	                it->setSelected(false);
 	        }
 	    }
+	    // For overlapping images, push the selected image to the end
+	    // such that it renders "on top"
+        obj_list.erase(intersected_tile);
+        obj_list.push_back(*intersected_tile);
 	}
 
 	cglXUpdateDone();
