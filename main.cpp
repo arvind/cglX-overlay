@@ -106,7 +106,6 @@ void handleMouseClick(GLint button, GLint button_state, GLint x, GLint y) {
 	    overlay->getPosOfFinger(0, posInOverlay);
 
 	    GLint modifiers = glutGetModifiers();
-
 	    obj_iter it;
         for(it = obj_list.begin(); it != obj_list.end(); it++)
             if(!(modifiers & GLUT_ACTIVE_CTRL))
@@ -228,6 +227,9 @@ void handleCustomMsg(int len, char *msg) {
         std::string overlayID = root["overlayID"].asString();
 
         if(event.compare("OVERLAY_MOVE") == 0) {
+            GLfloat oldPosition[2];
+            overlay->getPosOfFinger(0, oldPosition);
+
             double normalized_x = root["normalizedX"].asDouble();
             double normalized_y = root["normalizedY"].asDouble();
 
@@ -235,6 +237,15 @@ void handleCustomMsg(int len, char *msg) {
             GLfloat overlay_y = -((normalized_y * getHeadHeight()) - (getHeadHeight() / 2)) / 100.0f;
 
             overlay->setOverlayPos(overlay_x, overlay_y);
+
+            GLfloat newPosition[2];
+            overlay->getPosOfFinger(0, newPosition);
+
+            obj_iter it;
+            for(it = obj_list.begin(); it != obj_list.end(); it++)
+                if(it->isSelected())
+                    it->updateTransformations(state, newPosition[0], newPosition[1],
+                                                     oldPosition[0], oldPosition[1]);
         } else if(event.compare("OVERLAY_SCALE") == 0) {
             double scale_factor = root["scaleFactor"].asDouble();
             scale_factor = scale_factor + 1;
