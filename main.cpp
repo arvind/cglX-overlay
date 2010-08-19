@@ -111,7 +111,10 @@ void handleMouseClick(GLint button, GLint button_state, GLint x, GLint y) {
 	    bool intersected = false;
 	    for(it = obj_list.begin(); it != obj_list.end(); it++) {
 	        if(it->intersects(posInOverlay[0], posInOverlay[1]) && button_state == GLUT_DOWN) {
-	            it->toggleSelected();
+	            if(modifiers & GLUT_ACTIVE_CTRL)
+	            	it->toggleSelected();
+	            else
+	            	it->setSelected(true);
 
 	            intersected_tile = it;
 	            intersected = true;
