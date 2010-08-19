@@ -14,7 +14,7 @@
 #define ROTATE                  3
 
 class Tile {
-	public:
+	private:
 		GLuint  texture;
 		char *  filename;
 
@@ -26,6 +26,14 @@ class Tile {
 
 	public:
 		Tile(char * filename, float x, float y, float z, float width, float height);
+
+		GLfloat getX();
+		GLfloat getY();
+		GLfloat getZ();
+		GLfloat getWidth();
+		GLfloat getHeight();
+
+		void setTileSize(GLfloat new_w, GLfloat new_h);
 
 		void loadTextures();
 		void drawTile();

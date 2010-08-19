@@ -25,15 +25,40 @@ Tile::Tile(char * f, float trans_x, float trans_y, float trans_z, float dim_x, f
 	this->y = trans_y;
 	this->z = trans_z;
 
-	this->width   = dim_x;
-	this->height   = dim_y;
+	this->width  = dim_x;
+	this->height = dim_y;
 
-	this->rot_x   = 0;
-	this->rot_y   = 0;
+	this->rot_x  = 0;
+	this->rot_y  = 0;
 
 	this->is_selected = false;
 
 	this->loadTextures();
+}
+
+GLfloat Tile::getX() {
+	return this->x;
+}
+
+GLfloat Tile::getY() {
+	return this->y;
+}
+
+GLfloat Tile::getZ() {
+	return this->z;
+}
+
+GLfloat Tile::getWidth() {
+	return this->width;
+}
+
+GLfloat Tile::getHeight() {
+	return this->height;
+}
+
+void Tile::setTileSize(GLfloat new_w, GLfloat new_h) {
+	this->width  = new_w;
+	this->height = new_h;
 }
 
 void Tile::loadTextures() {

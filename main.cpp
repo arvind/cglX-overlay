@@ -111,13 +111,11 @@ void handleMouseClick(GLint button, GLint button_state, GLint x, GLint y) {
 	    bool intersected = false;
 	    for(it = obj_list.begin(); it != obj_list.end(); it++) {
 	        if(it->intersects(posInOverlay[0], posInOverlay[1]) && button_state == GLUT_DOWN) {
-	            printf("intersected %s\n", it->filename);
 	            it->toggleSelected();
 
 	            intersected_tile = it;
 	            intersected = true;
 	        } else {
-	            printf("didn't intersected %s\n", it->filename);
 	            if((modifiers & GLUT_ACTIVE_CTRL) == 0)
 	                it->setSelected(false);
 	        }
@@ -255,6 +253,14 @@ void handleCustomMsg(int len, char *msg) {
             scale_factor = scale_factor + 1;
 
             overlay->setOverlaySize(overlay_w * scale_factor, overlay_h * scale_factor);
+        } else if(event.compare("SCALE") == 0) {
+        	double scale_factor = root["scaleFactor"].asDouble();
+			scale_factor = scale_factor + 1;
+
+	        obj_iter it;
+	        for(it = obj_list.begin(); it != obj_list.end(); it++)
+	            if(it->isSelected())
+	            	it->setTileSize(it->getWidth() * scale_factor, it->getHeight() * scale_factor);
         }
 
     }
