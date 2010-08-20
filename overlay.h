@@ -3,6 +3,7 @@
 
 #include <utility>
 #include <map>
+#include <string>
 #define PI_2 3.14159*2
 
 class Overlay {
@@ -26,12 +27,12 @@ class Overlay {
         };
 
 		GLfloat x, y, z, width, height, color[3];
-		std::map<GLint, Overlay::Finger *> fingers;
+		std::map<std::string, Overlay::Finger *> fingers;
 		void drawOverlayShape(void);
 
 	public:
 		Overlay(GLfloat x, GLfloat y, GLfloat z, GLfloat w, GLfloat h, GLfloat * color);
-		typedef std::map<GLint, Overlay::Finger *>::iterator finger_iter;
+		typedef std::map<std::string, Overlay::Finger *>::iterator finger_iter;
 
 		GLfloat getX();
 		GLfloat getY();
@@ -45,10 +46,10 @@ class Overlay {
 		void drawOverlay(void);
 		void getBoundingBox(GLfloat * bounding_box);
 
-		void addFinger(GLint id, GLfloat x, GLfloat y, GLfloat width, GLfloat height);
-		void removeFinger(GLint id);
-		void moveFinger(GLint id, GLfloat x, GLfloat y);
-		void getPosOfFinger(GLint id, GLfloat * posInOverlay);
+		void addFinger(std::string id, GLfloat x, GLfloat y, GLfloat width, GLfloat height);
+		void removeFinger(std::string id);
+		void moveFinger(std::string id, GLfloat x, GLfloat y);
+		void getPosOfFinger(std::string id, GLfloat * posInOverlay);
 };
 
 #endif /* OVERLAY_H_ */

@@ -87,7 +87,7 @@ void handleMouseClick(GLint button, GLint button_state, GLint x, GLint y) {
 	if (cglXStartUpdate()) {
 	    if (button_state == GLUT_UP) {
 	        state = 0;
-	        overlay->removeFinger(0);
+	        overlay->removeFinger("0");
 	        return;
 	    }
 
@@ -100,10 +100,10 @@ void handleMouseClick(GLint button, GLint button_state, GLint x, GLint y) {
 	//  These coordinates are calculated relative to the overlay
 	    GLfloat normalized_x = (GLfloat) x / getHeadWidth();
 	    GLfloat normalized_y = (GLfloat) y / getHeadHeight();
-	    overlay->addFinger(0, normalized_x, normalized_y, 0.05, 0.05);
+	    overlay->addFinger("0", normalized_x, normalized_y, 0.05, 0.05);
 
 	    GLfloat posInOverlay[2];
-	    overlay->getPosOfFinger(0, posInOverlay);
+	    overlay->getPosOfFinger("0", posInOverlay);
 
 	    GLint modifiers = glutGetModifiers();
 
@@ -142,14 +142,14 @@ void handleMouseMove(GLint x, GLint y) {
 			return;
 
         GLfloat oldPosition[2];
-        overlay->getPosOfFinger(0, oldPosition);
+        overlay->getPosOfFinger("0", oldPosition);
 
         GLfloat normalized_x = (GLfloat) x / getHeadWidth();
         GLfloat normalized_y = (GLfloat) y / getHeadHeight();
-        overlay->moveFinger(0, normalized_x, normalized_y);
+        overlay->moveFinger("0", normalized_x, normalized_y);
 
         GLfloat newPosition[2];
-        overlay->getPosOfFinger(0, newPosition);
+        overlay->getPosOfFinger("0", newPosition);
 
         obj_iter it;
         for(it = obj_list.begin(); it != obj_list.end(); it++)
@@ -171,7 +171,7 @@ void handleSpecKeys(GLint key, GLint x, GLint y) {
 
 	if (cglXStartUpdate()) {
         GLfloat oldPosition[2];
-        overlay->getPosOfFinger(0, oldPosition);
+        overlay->getPosOfFinger("0", oldPosition);
 
 		switch (key) {
 		case GLUT_KEY_LEFT:
@@ -200,7 +200,7 @@ void handleSpecKeys(GLint key, GLint x, GLint y) {
 		}
 
         GLfloat newPosition[2];
-        overlay->getPosOfFinger(0, newPosition);
+        overlay->getPosOfFinger("0", newPosition);
 
         obj_iter it;
         for(it = obj_list.begin(); it != obj_list.end(); it++)
@@ -233,7 +233,7 @@ void handleCustomMsg(int len, char *msg) {
 
         if(event.compare("OVERLAY_MOVE") == 0) {
             GLfloat oldPosition[2];
-            overlay->getPosOfFinger(0, oldPosition);
+            overlay->getPosOfFinger("0", oldPosition);
 
             double normalized_x = root["normalizedX"].asDouble();
             double normalized_y = root["normalizedY"].asDouble();
@@ -244,7 +244,7 @@ void handleCustomMsg(int len, char *msg) {
             overlay->setOverlayPos(overlay_x, overlay_y);
 
             GLfloat newPosition[2];
-            overlay->getPosOfFinger(0, newPosition);
+            overlay->getPosOfFinger("0", newPosition);
 
             obj_iter it;
             for(it = obj_list.begin(); it != obj_list.end(); it++)

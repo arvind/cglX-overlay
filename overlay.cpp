@@ -111,12 +111,12 @@ void Overlay::getBoundingBox(GLfloat * bounding_box) {
     bounding_box[3] = this->y + (this->height / 2);
 }
 
-void Overlay::addFinger(GLint id, GLfloat x, GLfloat y, GLfloat width, GLfloat height) {
+void Overlay::addFinger(std::string id, GLfloat x, GLfloat y, GLfloat width, GLfloat height) {
     Finger * f = new Finger(this, x, y, width, height);
-    this->fingers.insert(std::pair<GLint, Finger*>(id, f));
+    this->fingers.insert(std::pair<std::string, Finger*>(id, f));
 }
 
-void Overlay::removeFinger(GLint id) {
+void Overlay::removeFinger(std::string id) {
     if(this->fingers.size() < 1)
         return;
 
@@ -125,7 +125,7 @@ void Overlay::removeFinger(GLint id) {
         this->fingers.erase(it);
 }
 
-void Overlay::moveFinger(GLint id, GLfloat x, GLfloat y) {
+void Overlay::moveFinger(std::string id, GLfloat x, GLfloat y) {
     finger_iter it = this->fingers.find(id);
     if(it->first == id) {
         GLfloat f_width = it->second->getWidth();
@@ -136,7 +136,7 @@ void Overlay::moveFinger(GLint id, GLfloat x, GLfloat y) {
     }
 }
 
-void Overlay::getPosOfFinger(GLint id, GLfloat * posInOverlay) {
+void Overlay::getPosOfFinger(std::string id, GLfloat * posInOverlay) {
     if(this->fingers.size() < 1)
         return;
 
