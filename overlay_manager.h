@@ -10,19 +10,20 @@
 
 #include "overlay.h"
 #include <map>
+using namespace std;
 
 class OverlayManager {
     private:
-        std::map<std::string, Overlay *> overlays;
-        GLfloat overlay_color[][3];
+        map<string, Overlay *> overlays;
+        void getOverlayColor(GLfloat * color);
 
     public:
-        typedef std::map<std::string, Overlay *>::iterator overlay_iter;
+        typedef map<std::string, Overlay *>::iterator overlay_iter;
 
         OverlayManager();
         void addOverlay(std::string overlay_id);
-        void addOverlay(Overlay *);
-        std::map<std::string, Overlay*> getOverlays();
+        void addOverlay(Overlay * overlay);
+        map<std::string, Overlay*> getOverlays();
         Overlay * getOverlay(std::string overlay_id);
         void removeOverlay(std::string overlay_id);
         void setOverlaySize(std::string overlay_id, GLfloat new_w, GLfloat new_h);
