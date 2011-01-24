@@ -46,9 +46,9 @@ OBJECTS_DIR           = .obj
 # The sources
 # ---------------------------------------------------------------------------
 
-HEADERS              += bmp.h overlay.h tile.h main.h
+HEADERS              += bmp.h overlay.h overlay_manager.h tile.h main.h
 
-SOURCES              += bmp.cpp overlay.cpp tile.cpp main.cpp
+SOURCES              += bmp.cpp overlay.cpp overlay_manager.cpp tile.cpp main.cpp
 
 # ---------------------------------------------------------------------------
 # linux

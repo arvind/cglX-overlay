@@ -28,7 +28,7 @@ static int state;
 
 void init(void) {
 	Tile t0("Data/0.bmp", -1.5f, -1.2f, -6.0f, 2.0, 2.0);
-	Tile t1("Data/1.bmp",  1.5f, -1.2f, -6.0f, 2.0, 2.0);
+	Tile t1("Data/1.bmp",  1.5f, -1.2f, -6.0f, 2.0, 1.5);
 	Tile t2("Data/2.bmp",  0.0f,  1.2f, -6.0f, 2.0, 1.5);
 
 	obj_list.push_back(t0);
