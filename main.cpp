@@ -15,11 +15,12 @@
 #include <string.h>
 #include <json/json.h>
 #include "bmp.h"
-#include "overlay.h"
+#include "overlay_manager.h"
 #include "tile.h"
 #include "main.h"
 
 static Overlay * overlay;
+static OverlayManager overlay_manager;
 
 static std::list<Tile> obj_list;
 typedef std::list<Tile>::iterator obj_iter;
@@ -35,8 +36,8 @@ void init(void) {
 	obj_list.push_back(t1);
 	obj_list.push_back(t2);
 
-	GLfloat overlay_color[3] = {1.0f, 0.0f, 0.0f};
-	overlay = new Overlay(0.0f, 0.0f, -6.0f, 2.0f, 1.4f, overlay_color);
+//	GLfloat overlay_color[3] = {1.0f, 0.0f, 0.0f};
+//	overlay = overlay_manager.getOverlay("0");
 
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0);
 	glShadeModel(GL_SMOOTH);
@@ -77,7 +78,7 @@ void handleDisplay(void) {
 	for(it = obj_list.begin(); it != obj_list.end(); it++)
 		it->drawTile();
 
-	overlay->drawOverlay();
+	overlay_manager.drawOverlays();
 	glutSwapBuffers();
 
 	glutPostRedisplay();
@@ -216,9 +217,6 @@ void handleSpecKeys(GLint key, GLint x, GLint y) {
 
 void handleCustomMsg(int len, char *msg) {
     if (cglXStartUpdate()) {
-        GLfloat overlay_w = overlay->getWidth();
-        GLfloat overlay_h = overlay->getHeight();
-
         Json::Value root;
         Json::Reader reader;
         bool parsingSuccessful = reader.parse( msg, root );
@@ -230,6 +228,10 @@ void handleCustomMsg(int len, char *msg) {
 
         std::string event = root["event"].asString();
         std::string overlayID = root["overlayID"].asString();
+
+        overlay = overlay_manager.getOverlay(overlayID);
+        GLfloat overlay_w = overlay->getWidth();
+        GLfloat overlay_h = overlay->getHeight();
 
         if(event.compare("OVERLAY_MOVE") == 0) {
             GLfloat oldPosition[2];
@@ -282,9 +284,9 @@ int main(int argc, char** argv) {
 	glutDisplayFunc(handleDisplay);
 	glutIdleFunc(handleDisplay);
 	glutReshapeFunc(handleReshape);
-	glutMouseFunc(handleMouseClick);
-	glutMotionFunc(handleMouseMove);
-	glutSpecialFunc(handleSpecKeys);
+//	glutMouseFunc(handleMouseClick);
+//	glutMotionFunc(handleMouseMove);
+//	glutSpecialFunc(handleSpecKeys);
 	cglXCustomMsgFunc(handleCustomMsg);
 	glutMainLoop();
 	return 0; // ANSI C requires main to return int.
