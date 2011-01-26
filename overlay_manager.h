@@ -21,8 +21,8 @@ class OverlayManager {
         typedef map<std::string, Overlay *>::iterator overlay_iter;
 
         OverlayManager();
-        void addOverlay(std::string overlay_id);
-        void addOverlay(Overlay * overlay);
+        Overlay * addOverlay(std::string overlay_id);
+        Overlay * addOverlay(Overlay * overlay);
         map<std::string, Overlay*> getOverlays();
         Overlay * getOverlay(std::string overlay_id);
         void removeOverlay(std::string overlay_id);

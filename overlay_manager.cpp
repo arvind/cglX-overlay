@@ -21,8 +21,8 @@ OverlayManager::OverlayManager() {
     GLfloat color[3];
     this->getOverlayColor(color);
 
-    Overlay * default_overlay = new Overlay(0.0f, 0.0f, -6.0f, 2.0f, 1.4f, color);
-    this->overlays.insert(pair<string, Overlay *>("0", default_overlay));
+//    Overlay * default_overlay = new Overlay(0.0f, 0.0f, -6.0f, 2.0f, 1.4f, color);
+//    this->overlays.insert(pair<string, Overlay *>("0", default_overlay));
 }
 
 void OverlayManager::getOverlayColor(GLfloat * color) {
@@ -36,19 +36,23 @@ void OverlayManager::getOverlayColor(GLfloat * color) {
     color[2] = overlay_colors[which_color][2];
 }
 
-void OverlayManager::addOverlay(string overlay_id) {
+Overlay * OverlayManager::addOverlay(string overlay_id) {
     GLfloat color[3];
     this->getOverlayColor(color);
 
     Overlay * default_overlay = new Overlay(0.0f, 0.0f, -6.0f, 2.0f, 1.4f, color);
     this->overlays.insert(pair<string, Overlay *>(overlay_id, default_overlay));
+
+    return default_overlay;
 }
 
-void OverlayManager::addOverlay(Overlay * overlay) {
+Overlay * OverlayManager::addOverlay(Overlay * overlay) {
     char overlay_id[10];
     sprintf(overlay_id, "%d", this->overlays.size());
     string overlay_strid(overlay_id);
     this->overlays.insert(pair<string, Overlay *>(overlay_strid, overlay));
+
+    return overlay;
 }
 
 map<string, Overlay*> OverlayManager::getOverlays() {
@@ -56,8 +60,13 @@ map<string, Overlay*> OverlayManager::getOverlays() {
 }
 
 Overlay * OverlayManager::getOverlay(string overlay_id) {
-    overlay_iter it = this->overlays.find(overlay_id);
-    return it->second;
+    if(this->overlays.size() > 0) {
+        overlay_iter it = this->overlays.find(overlay_id);
+        if(it != this->overlays.end())
+            return it->second;
+    }
+
+    return this->addOverlay(overlay_id);
 }
 
 void OverlayManager::removeOverlay(string overlay_id) {
