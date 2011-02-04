@@ -19,7 +19,6 @@
 #include "tile.h"
 #include "main.h"
 
-static Overlay * overlay;
 static OverlayManager overlay_manager;
 
 static std::list<Tile> obj_list;
@@ -84,11 +83,12 @@ void handleDisplay(void) {
 	glutPostRedisplay();
 }
 
-void handleMouseClick(GLint button, GLint button_state, GLint x, GLint y) {
+void handleUpDown(Overlay * overlay, std::string pointID, GLint button, GLint button_state,
+        double normalized_x, double normalized_y) {
 	if (cglXStartUpdate()) {
 	    if (button_state == GLUT_UP) {
 	        state = 0;
-	        overlay->removeFinger("0");
+	        overlay->removeFinger(pointID);
 	        return;
 	    }
 
@@ -98,13 +98,10 @@ void handleMouseClick(GLint button, GLint button_state, GLint x, GLint y) {
         if (button == GLUT_RIGHT_BUTTON)
             state |= ZOOM;
 
-	//  These coordinates are calculated relative to the overlay
-	    GLfloat normalized_x = (GLfloat) x / getHeadWidth();
-	    GLfloat normalized_y = (GLfloat) y / getHeadHeight();
-	    overlay->addFinger("0", normalized_x, normalized_y, 0.05, 0.05);
+	    overlay->addFinger(pointID, normalized_x, normalized_y, 0.05, 0.05);
 
 	    GLfloat posInOverlay[2];
-	    overlay->getPosOfFinger("0", posInOverlay);
+	    overlay->getPosOfFinger(pointID, posInOverlay);
 
 	    GLint modifiers = glutGetModifiers();
 
@@ -137,27 +134,24 @@ void handleMouseClick(GLint button, GLint button_state, GLint x, GLint y) {
 	glutPostRedisplay();
 }
 
-void handleMouseMove(GLint x, GLint y) {
+void handleMove(Overlay * overlay, std::string point_id, double normalized_x, double normalized_y) {
 	if (cglXStartUpdate()) {
 		if (state == 0)
 			return;
 
         GLfloat oldPosition[2];
-        overlay->getPosOfFinger("0", oldPosition);
+        overlay->getPosOfFinger(point_id, oldPosition);
 
-        GLfloat normalized_x = (GLfloat) x / getHeadWidth();
-        GLfloat normalized_y = (GLfloat) y / getHeadHeight();
-        overlay->moveFinger("0", normalized_x, normalized_y);
+        overlay->moveFinger(point_id, normalized_x, normalized_y);
 
         GLfloat newPosition[2];
-        overlay->getPosOfFinger("0", newPosition);
+        overlay->getPosOfFinger(point_id, newPosition);
 
         obj_iter it;
         for(it = obj_list.begin(); it != obj_list.end(); it++)
             if(it->isSelected())
                 it->updateTransformations(state, newPosition[0], newPosition[1],
 		                                         oldPosition[0], oldPosition[1]);
-
 	}
 	cglXUpdateDone();
 
@@ -165,6 +159,7 @@ void handleMouseMove(GLint x, GLint y) {
 }
 
 void handleSpecKeys(GLint key, GLint x, GLint y) {
+    Overlay * overlay = NULL;
 	GLfloat overlay_x = overlay->getX();
 	GLfloat overlay_y = overlay->getY();
 	GLfloat overlay_w = overlay->getWidth();
@@ -227,18 +222,24 @@ void handleCustomMsg(int len, char *msg) {
         }
 
         std::string event = root["event"].asString();
-        std::string overlayID = root["overlayID"].asString();
+        std::string overlay_id = root["overlayID"].asString();
+        std::string point_id = root["pointID"].asString();
 
-        overlay = overlay_manager.getOverlay(overlayID);
+        Overlay * overlay = overlay_manager.getOverlay(overlay_id);
         GLfloat overlay_w = overlay->getWidth();
         GLfloat overlay_h = overlay->getHeight();
 
+        double normalized_x = 0, normalized_y = 0, scale_factor = 1;
+        if(root["normalizedX"].isDouble())
+            normalized_x = root["normalizedX"].asDouble();
+        if(root["normalizedY"].isDouble())
+            normalized_y = root["normalizedY"].asDouble();
+        if(root["scaleFactor"].isDouble())
+            scale_factor += root["scaleFactor"].asDouble();
+
         if(event.compare("OVERLAY_MOVE") == 0) {
             GLfloat oldPosition[2];
-            overlay->getPosOfFinger("0", oldPosition);
-
-            double normalized_x = root["normalizedX"].asDouble();
-            double normalized_y = root["normalizedY"].asDouble();
+            overlay->getPosOfFinger(point_id, oldPosition);
 
             GLfloat overlay_x = ((normalized_x * getHeadWidth())  - (getHeadWidth()  / 2)) / 100.0f;
             GLfloat overlay_y = -((normalized_y * getHeadHeight()) - (getHeadHeight() / 2)) / 100.0f;
@@ -246,7 +247,7 @@ void handleCustomMsg(int len, char *msg) {
             overlay->setOverlayPos(overlay_x, overlay_y);
 
             GLfloat newPosition[2];
-            overlay->getPosOfFinger("0", newPosition);
+            overlay->getPosOfFinger(point_id, newPosition);
 
             obj_iter it;
             for(it = obj_list.begin(); it != obj_list.end(); it++)
@@ -254,18 +255,18 @@ void handleCustomMsg(int len, char *msg) {
                     it->updateTransformations(state, newPosition[0], newPosition[1],
                                                      oldPosition[0], oldPosition[1]);
         } else if(event.compare("OVERLAY_SCALE") == 0) {
-            double scale_factor = root["scaleFactor"].asDouble();
-            scale_factor = scale_factor + 1;
-
             overlay->setOverlaySize(overlay_w * scale_factor, overlay_h * scale_factor);
         } else if(event.compare("SCALE") == 0) {
-        	double scale_factor = root["scaleFactor"].asDouble();
-			scale_factor = scale_factor + 1;
-
 	        obj_iter it;
 	        for(it = obj_list.begin(); it != obj_list.end(); it++)
 	            if(it->isSelected())
 	            	it->setTileSize(it->getWidth() * scale_factor, it->getHeight() * scale_factor);
+        } else if(event.compare("MOVE") == 0) {
+            handleMove(overlay, point_id, normalized_x, normalized_y);
+        } else if(event.compare("DOWN") == 0) {
+            handleUpDown(overlay, point_id, GLUT_LEFT_BUTTON, GLUT_DOWN, normalized_x, normalized_y);
+        } else if(event.compare("UP") == 0) {
+            handleUpDown(overlay, point_id, GLUT_LEFT_BUTTON, GLUT_UP, normalized_x, normalized_y);
         }
 
     }
