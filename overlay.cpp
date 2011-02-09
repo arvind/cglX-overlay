@@ -16,6 +16,7 @@ Overlay::Overlay(GLfloat x, GLfloat y, GLfloat z, GLfloat w, GLfloat h, GLfloat 
 	this->color[0] = color[0];
 	this->color[1] = color[1];
 	this->color[2] = color[2];
+	this->sphere_size = 0.5f;
 }
 
 GLfloat Overlay::getX() {
@@ -36,6 +37,10 @@ GLfloat Overlay::getWidth() {
 
 GLfloat Overlay::getHeight() {
 	return this->height;
+}
+
+GLfloat Overlay::getSphereSize() {
+    return this->sphere_size;
 }
 
 void Overlay::drawOverlayShape(void) {
@@ -109,6 +114,19 @@ void Overlay::getBoundingBox(GLfloat * bounding_box) {
 
     bounding_box[2] = this->x + (this->width  / 2);
     bounding_box[3] = this->y + (this->height / 2);
+}
+
+void Overlay::getBoundingBoxWithSOI(GLfloat * bounding_box) {
+    // [0] - minX
+    // [1] - minY
+    // [2] - maxX
+    // [3] - maxY
+
+    bounding_box[0] = this->x - (this->width  / 2) - this->sphere_size;
+    bounding_box[1] = this->y - (this->height / 2) - this->sphere_size;
+
+    bounding_box[2] = this->x + (this->width  / 2) + this->sphere_size;
+    bounding_box[3] = this->y + (this->height / 2) + this->sphere_size;
 }
 
 void Overlay::addFinger(std::string id, GLfloat x, GLfloat y, GLfloat width, GLfloat height) {

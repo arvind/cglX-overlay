@@ -26,7 +26,7 @@ class Overlay {
                 void getPosInOverlay(GLfloat * posInOverlay);
         };
 
-		GLfloat x, y, z, width, height, color[3];
+		GLfloat x, y, z, width, height, color[3], sphere_size;
 		std::map<std::string, Overlay::Finger *> fingers;
 		void drawOverlayShape(void);
 
@@ -39,12 +39,14 @@ class Overlay {
 		GLfloat getZ();
 		GLfloat getWidth();
 		GLfloat getHeight();
+		GLfloat getSphereSize();
 
 		void setOverlay(GLfloat new_x, GLfloat new_y, GLfloat new_w, GLfloat new_h);
 		void setOverlaySize(GLfloat new_w, GLfloat new_h);
 		void setOverlayPos(GLfloat new_x, GLfloat new_y);
 		void drawOverlay(void);
 		void getBoundingBox(GLfloat * bounding_box);
+		void getBoundingBoxWithSOI(GLfloat * bounding_box);
 
 		void addFinger(std::string id, GLfloat x, GLfloat y, GLfloat width, GLfloat height);
 		void removeFinger(std::string id);
