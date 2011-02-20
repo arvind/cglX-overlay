@@ -22,13 +22,14 @@ class OverlayManager {
 
         OverlayManager();
         Overlay * addOverlay(std::string overlay_id);
-        Overlay * addOverlay(Overlay * overlay);
+//        Overlay * addOverlay(Overlay * overlay);
         map<std::string, Overlay*> getOverlays();
         Overlay * getOverlay(std::string overlay_id);
         void removeOverlay(std::string overlay_id);
         void setOverlaySize(std::string overlay_id, GLfloat new_w, GLfloat new_h);
         void setOverlayPos(std::string overlay_id, GLfloat new_x, GLfloat new_y);
         void drawOverlays();
+        void checkSpheresOfInfluence(Overlay *);
 };
 
 #endif /* OVERLAY_MANAGER_H_ */

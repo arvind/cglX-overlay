@@ -26,14 +26,16 @@ class Overlay {
                 void getPosInOverlay(GLfloat * posInOverlay);
         };
 
+        std::string id;
 		GLfloat x, y, z, width, height, color[3], sphere_size;
 		std::map<std::string, Overlay::Finger *> fingers;
 		void drawOverlayShape(void);
 
 	public:
-		Overlay(GLfloat x, GLfloat y, GLfloat z, GLfloat w, GLfloat h, GLfloat * color);
+		Overlay(std::string id, GLfloat x, GLfloat y, GLfloat z, GLfloat w, GLfloat h, GLfloat * color);
 		typedef std::map<std::string, Overlay::Finger *>::iterator finger_iter;
 
+		std::string getID();
 		GLfloat getX();
 		GLfloat getY();
 		GLfloat getZ();

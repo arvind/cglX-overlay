@@ -10,13 +10,18 @@
 #endif
 #include "overlay.h";
 
-Overlay::Overlay(GLfloat x, GLfloat y, GLfloat z, GLfloat w, GLfloat h, GLfloat * color) {
+Overlay::Overlay(std::string id, GLfloat x, GLfloat y, GLfloat z, GLfloat w, GLfloat h, GLfloat * color) {
+    this->id = id;
 	this->setOverlay(x, y, w, h);
 	this->z = z;
 	this->color[0] = color[0];
 	this->color[1] = color[1];
 	this->color[2] = color[2];
 	this->sphere_size = 0.5f;
+}
+
+std::string Overlay::getID() {
+    return this->id;
 }
 
 GLfloat Overlay::getX() {
