@@ -118,11 +118,9 @@ void OverlayManager::checkSpheresOfInfluence(Overlay * overlay) {
             intersecting_values[3] = boundingBoxWithSOI[3] - intersectBox[1]; // maxY - iMinY
 
             // The direction to move o will be based on which of the four sides the smallest
-            // intersecting area (> 0) is. If the minimum intersecting area is:
-            // [0] - intersection between overlay's left edge and o's right edge, move o left
-            // [1] - intersection between overlay's right edge and o's left edge, move o right
-            // [2] - intersection between overlay's bottom edge and o's top edge, move o down
-            // [3] - intersection between overlay's top edge and o's bottom edge, move o up
+            // intersecting area (> 0) is. We check the smallest intersecting area as this will
+            // give us an indication of how overlay is moving in relation to o.
+            // If the minimum intersecting area is along the x axis, move o along the y axis and vice-versa.
             int min_index = 0;
             GLfloat min_intersection = intersecting_values[0];
 
@@ -130,22 +128,24 @@ void OverlayManager::checkSpheresOfInfluence(Overlay * overlay) {
                 if(intersecting_values[i] > 0 && intersecting_values[i] < min_intersection)
                     min_index = i;
 
-            switch(min_index) {
-                case 0:
-                    this->setOverlayPos(o->getID(), o->getX() - intersecting_values[0], o->getY());
-                break;
+            if(min_index == 0 || min_index == 1) {  // Smallest intersection along x-axis
+                GLfloat new_y = o->getY();
+                if(o->getY() < overlay->getY()) {
+                    new_y = boundingBoxWithSOI[1] - o->getSphereSize() - (o->getHeight() / 2);
+                } else if(o->getY() > overlay->getY()) {
+                    new_y = boundingBoxWithSOI[3] + o->getSphereSize() + (o->getHeight() / 2);
+                }
 
-                case 1:
-                    this->setOverlayPos(o->getID(), o->getX() + intersecting_values[1], o->getY());
-                break;
+                this->setOverlayPos(o->getID(), o->getX(), new_y);
+            } else {                                // Smallest intersection along y-axis
+                GLfloat new_x = o->getY();
+                if(o->getX() < overlay->getX()) {
+                    new_x = boundingBoxWithSOI[0] - o->getSphereSize() - (o->getWidth() / 2);
+                } else if(o->getX() > overlay->getX()) {
+                    new_x = boundingBoxWithSOI[2] + o->getSphereSize() + (o->getWidth() / 2);
+                }
 
-                case 2:
-                    this->setOverlayPos(o->getID(), o->getX(), o->getY() - intersecting_values[2]);
-                break;
-
-                case 3:
-                    this->setOverlayPos(o->getID(), o->getX(), o->getY() + intersecting_values[3]);
-                break;
+                this->setOverlayPos(o->getID(), new_x, o->getY());
             }
         }
     }

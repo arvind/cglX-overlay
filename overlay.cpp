@@ -17,7 +17,7 @@ Overlay::Overlay(std::string id, GLfloat x, GLfloat y, GLfloat z, GLfloat w, GLf
 	this->color[0] = color[0];
 	this->color[1] = color[1];
 	this->color[2] = color[2];
-	this->sphere_size = 0.5f;
+	this->sphere_size = 0.1f;
 }
 
 std::string Overlay::getID() {
