@@ -105,6 +105,9 @@ void OverlayManager::checkSpheresOfInfluence(Overlay * overlay) {
         GLfloat intersectBox[4];
         o->getBoundingBoxWithSOI(intersectBox);
 
+        if(o->getFingers().size() > 0)    // If someone's working in their overlay,
+            return;                     // don't move it. That's just rude!
+
         // First check intersection - to intersect they must intersect on both x and y axes
         if(((boundingBoxWithSOI[0] > intersectBox[0] && boundingBoxWithSOI[0] < intersectBox[2]) ||
             (boundingBoxWithSOI[2] > intersectBox[0] && boundingBoxWithSOI[2] < intersectBox[2])) &&
@@ -136,7 +139,7 @@ void OverlayManager::checkSpheresOfInfluence(Overlay * overlay) {
                     new_y = boundingBoxWithSOI[3] + o->getSphereSize() + (o->getHeight() / 2);
                 }
 
-                this->setOverlayPos(o->getID(), o->getX(), new_y);
+                o->setOverlayPos(o->getX(), new_y);
             } else {                                // Smallest intersection along y-axis
                 GLfloat new_x = o->getY();
                 if(o->getX() < overlay->getX()) {
@@ -145,7 +148,7 @@ void OverlayManager::checkSpheresOfInfluence(Overlay * overlay) {
                     new_x = boundingBoxWithSOI[2] + o->getSphereSize() + (o->getWidth() / 2);
                 }
 
-                this->setOverlayPos(o->getID(), new_x, o->getY());
+                o->setOverlayPos(new_x, o->getY());
             }
         }
     }

@@ -42,6 +42,7 @@ class Overlay {
 		GLfloat getWidth();
 		GLfloat getHeight();
 		GLfloat getSphereSize();
+		std::map<std::string, Overlay::Finger *> getFingers();
 
 		void setOverlay(GLfloat new_x, GLfloat new_y, GLfloat new_w, GLfloat new_h);
 		void setOverlaySize(GLfloat new_w, GLfloat new_h);
