@@ -120,6 +120,11 @@ void OverlayManager::checkSpheresOfInfluence(Overlay * overlay) {
             intersecting_values[2] = intersectBox[3] - boundingBoxWithSOI[1]; // iMaxY - minY
             intersecting_values[3] = boundingBoxWithSOI[3] - intersectBox[1]; // maxY - iMinY
 
+            printf("0: %f\t1: %f\t2: %f\t3: %f\n", intersecting_values[0],
+                    intersecting_values[1],
+                    intersecting_values[2],
+                    intersecting_values[3]);
+
             // The direction to move o will be based on which of the four sides the smallest
             // intersecting area (> 0) is. We check the smallest intersecting area as this will
             // give us an indication of how overlay is moving in relation to o.
@@ -127,9 +132,14 @@ void OverlayManager::checkSpheresOfInfluence(Overlay * overlay) {
             int min_index = 0;
             GLfloat min_intersection = intersecting_values[0];
 
-            for(int i = 0; i < 3; i++)
-                if(intersecting_values[i] > 0 && intersecting_values[i] < min_intersection)
+            for(int i = 0; i < 4; i++) {
+                if(intersecting_values[i] > 0 && intersecting_values[i] < min_intersection) {
                     min_index = i;
+                    min_intersection = intersecting_values[i];
+                }
+            }
+
+            printf("min_intersection: %f\tmin_index: %d\n", min_intersection, min_index);
 
             if(min_index == 0 || min_index == 1) {  // Smallest intersection along x-axis
                 GLfloat new_y = o->getY();
