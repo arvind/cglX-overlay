@@ -99,6 +99,8 @@ void OverlayManager::checkSpheresOfInfluence(Overlay * overlay) {
     GLfloat boundingBoxWithSOI[4];
     overlay->getBoundingBoxWithSOI(boundingBoxWithSOI);
 
+//    printf("hello\n");
+
     for(overlay_iter it = this->overlays.begin(); it != this->overlays.end(); it++) {
         Overlay * o = (Overlay *) it->second;
 
@@ -106,7 +108,16 @@ void OverlayManager::checkSpheresOfInfluence(Overlay * overlay) {
         o->getBoundingBoxWithSOI(intersectBox);
 
         if(o->getFingers().size() > 0)    // If someone's working in their overlay,
-            return;                     // don't move it. That's just rude!
+            continue;                     // don't move it. That's just rude!
+
+//        printf("bb[0]: %f\t bb[1]: %f\t bb[2]: %f\t bb[3]: %f\n", boundingBoxWithSOI[0],
+//                boundingBoxWithSOI[1],
+//                boundingBoxWithSOI[2],
+//                boundingBoxWithSOI[3]);
+//        printf("ob[0]: %f\t ob[1]: %f\t ob[2]: %f\t ob[3]: %f\n", intersectBox[0],
+//                intersectBox[1],
+//                intersectBox[2],
+//                intersectBox[3]);
 
         // First check intersection - to intersect they must intersect on both x and y axes
         if(((boundingBoxWithSOI[0] > intersectBox[0] && boundingBoxWithSOI[0] < intersectBox[2]) ||
@@ -120,10 +131,10 @@ void OverlayManager::checkSpheresOfInfluence(Overlay * overlay) {
             intersecting_values[2] = intersectBox[3] - boundingBoxWithSOI[1]; // iMaxY - minY
             intersecting_values[3] = boundingBoxWithSOI[3] - intersectBox[1]; // maxY - iMinY
 
-            printf("0: %f\t1: %f\t2: %f\t3: %f\n", intersecting_values[0],
-                    intersecting_values[1],
-                    intersecting_values[2],
-                    intersecting_values[3]);
+//            printf("0: %f\t1: %f\t2: %f\t3: %f\n", intersecting_values[0],
+//                    intersecting_values[1],
+//                    intersecting_values[2],
+//                    intersecting_values[3]);
 
             // The direction to move o will be based on which of the four sides the smallest
             // intersecting area (> 0) is. We check the smallest intersecting area as this will
@@ -139,23 +150,23 @@ void OverlayManager::checkSpheresOfInfluence(Overlay * overlay) {
                 }
             }
 
-            printf("min_intersection: %f\tmin_index: %d\n", min_intersection, min_index);
+//            printf("min_intersection: %f\tmin_index: %d\n", min_intersection, min_index);
 
             if(min_index == 0 || min_index == 1) {  // Smallest intersection along x-axis
                 GLfloat new_y = o->getY();
                 if(o->getY() < overlay->getY()) {
-                    new_y = boundingBoxWithSOI[1] - o->getSphereSize() - (o->getHeight() / 2);
+                    new_y = boundingBoxWithSOI[1] - (2 * o->getSphereSize()) - (o->getHeight() / 2);
                 } else if(o->getY() > overlay->getY()) {
-                    new_y = boundingBoxWithSOI[3] + o->getSphereSize() + (o->getHeight() / 2);
+                    new_y = boundingBoxWithSOI[3] + (2 * o->getSphereSize()) + (o->getHeight() / 2);
                 }
 
                 o->setOverlayPos(o->getX(), new_y);
             } else {                                // Smallest intersection along y-axis
                 GLfloat new_x = o->getY();
                 if(o->getX() < overlay->getX()) {
-                    new_x = boundingBoxWithSOI[0] - o->getSphereSize() - (o->getWidth() / 2);
+                    new_x = boundingBoxWithSOI[0] - (2 * o->getSphereSize()) - (o->getWidth() / 2);
                 } else if(o->getX() > overlay->getX()) {
-                    new_x = boundingBoxWithSOI[2] + o->getSphereSize() + (o->getWidth() / 2);
+                    new_x = boundingBoxWithSOI[2] + (2 * o->getSphereSize()) + (o->getWidth() / 2);
                 }
 
                 o->setOverlayPos(new_x, o->getY());
