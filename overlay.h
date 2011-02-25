@@ -29,7 +29,8 @@ class Overlay {
         std::string id;
 		GLfloat x, y, z, width, height, color[3], sphere_size;
 		std::map<std::string, Overlay::Finger *> fingers;
-		void drawOverlayShape(void);
+		bool draw_sphere;
+		void drawOverlayShape(bool sphere);
 
 	public:
 		Overlay(std::string id, GLfloat x, GLfloat y, GLfloat z, GLfloat w, GLfloat h, GLfloat * color);
@@ -42,6 +43,8 @@ class Overlay {
 		GLfloat getWidth();
 		GLfloat getHeight();
 		GLfloat getSphereSize();
+		bool    getDrawSphere();
+		void    setDrawSphere(bool d);
 		std::map<std::string, Overlay::Finger *> getFingers();
 
 		void setOverlay(GLfloat new_x, GLfloat new_y, GLfloat new_w, GLfloat new_h);

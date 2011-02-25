@@ -18,6 +18,7 @@ Overlay::Overlay(std::string id, GLfloat x, GLfloat y, GLfloat z, GLfloat w, GLf
 	this->color[1] = color[1];
 	this->color[2] = color[2];
 	this->sphere_size = 0.1f;
+	this->draw_sphere = false;
 }
 
 std::string Overlay::getID() {
@@ -48,10 +49,23 @@ GLfloat Overlay::getSphereSize() {
     return this->sphere_size;
 }
 
-void Overlay::drawOverlayShape(void) {
+bool Overlay::getDrawSphere() {
+    return this->draw_sphere;
+}
+
+void Overlay::setDrawSphere(bool d) {
+    this->draw_sphere = d;
+}
+
+void Overlay::drawOverlayShape(bool sphere) {
 	GLfloat w = this->width / 2;
 	GLfloat h = this->height / 2;
 	
+	if(sphere) {
+	    w += this->sphere_size;
+	    h += this->sphere_size;
+	}
+
 	glBegin(GL_QUADS);
 		glVertex3f(-w, h, 0.0f);
 		glVertex3f( w, h, 0.0f);
@@ -70,14 +84,27 @@ void Overlay::drawOverlay(void) {
 	// First draw overlay fill
 	glColor4f(1.0f, 1.0f, 1.0f, 0.4f);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	this->drawOverlayShape();
+	this->drawOverlayShape(false);
 	
 	// Then outline it
 	glColor4f(this->color[0], this->color[1], this->color[2], 0.4f);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glLineWidth( 3.0f );
-	this->drawOverlayShape();
+	this->drawOverlayShape(false);
 	
+    // Then draw sphere if enabled
+	if(this->draw_sphere) {
+	    glColor4f(1.0f, 1.0f, 1.0f, 0.4f);
+	    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	    glLineWidth( 3.0f );
+	    glLineStipple(8, 0xAAAA);
+	    glEnable(GL_LINE_STIPPLE);
+
+	    this->drawOverlayShape(true);
+
+	    glDisable(GL_LINE_STIPPLE);
+	}
+
 	// Draw fingers
 	for(finger_iter it = this->fingers.begin(); it != this->fingers.end(); it++) {
 	    it->second->drawFinger();

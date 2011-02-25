@@ -16,6 +16,7 @@
     #include <GL/glut.h>
 #endif
 #include "overlay_manager.h";
+#include <cmath>;
 
 OverlayManager::OverlayManager() {
     GLfloat color[3];
@@ -40,7 +41,7 @@ Overlay * OverlayManager::addOverlay(string overlay_id) {
     GLfloat color[3];
     this->getOverlayColor(color);
 
-    Overlay * default_overlay = new Overlay(overlay_id, 0.0f, 0.0f, -6.0f, 2.0f, 1.4f, color);
+    Overlay * default_overlay = new Overlay(overlay_id, 0.0f, 0.0f, -6.0f, 1.5f, 1.05f, color);
     this->overlays.insert(pair<string, Overlay *>(overlay_id, default_overlay));
 
     return default_overlay;
@@ -99,6 +100,8 @@ void OverlayManager::checkSpheresOfInfluence(Overlay * overlay) {
     GLfloat boundingBoxWithSOI[4];
     overlay->getBoundingBoxWithSOI(boundingBoxWithSOI);
 
+    const GLfloat display_zone = 0.2f;
+
     for(overlay_iter it = this->overlays.begin(); it != this->overlays.end(); it++) {
         Overlay * o = (Overlay *) it->second;
 
@@ -111,17 +114,28 @@ void OverlayManager::checkSpheresOfInfluence(Overlay * overlay) {
         if(o->getFingers().size() > 0)    // If someone's working in their overlay,
             continue;                     // don't move it. That's just rude!
 
+        GLfloat intersecting_values[4];
+        intersecting_values[0] = intersectBox[2] - boundingBoxWithSOI[0]; // iMaxX - minX
+        intersecting_values[1] = boundingBoxWithSOI[2] - intersectBox[0]; // maxX - iMinX
+        intersecting_values[2] = intersectBox[3] - boundingBoxWithSOI[1]; // iMaxY - minY
+        intersecting_values[3] = boundingBoxWithSOI[3] - intersectBox[1]; // maxY - iMinY
+
+
+        // If two overlays are "close", show their spheres
+        if((abs(intersecting_values[0]) <= display_zone || abs(intersecting_values[1]) <= display_zone) &&
+           (abs(intersecting_values[2]) <= display_zone || abs(intersecting_values[3]) <= display_zone)) {
+            o->setDrawSphere(true);
+            overlay->setDrawSphere(true);
+        } else {
+            o->setDrawSphere(false);
+            overlay->setDrawSphere(false);
+        }
+
         // First check intersection - to intersect they must intersect on both x and y axes
         if(((boundingBoxWithSOI[0] > intersectBox[0] && boundingBoxWithSOI[0] < intersectBox[2]) ||
             (boundingBoxWithSOI[2] > intersectBox[0] && boundingBoxWithSOI[2] < intersectBox[2])) &&
            ((boundingBoxWithSOI[1] > intersectBox[1] && boundingBoxWithSOI[1] < intersectBox[3]) ||
             (boundingBoxWithSOI[3] > intersectBox[1] && boundingBoxWithSOI[3] < intersectBox[3]))) {
-
-            GLfloat intersecting_values[4];
-            intersecting_values[0] = intersectBox[2] - boundingBoxWithSOI[0]; // iMaxX - minX
-            intersecting_values[1] = boundingBoxWithSOI[2] - intersectBox[0]; // maxX - iMinX
-            intersecting_values[2] = intersectBox[3] - boundingBoxWithSOI[1]; // iMaxY - minY
-            intersecting_values[3] = boundingBoxWithSOI[3] - intersectBox[1]; // maxY - iMinY
 
             // The direction to move o will be based on which of the four sides the smallest
             // intersecting area (> 0) is. We check the smallest intersecting area as this will
