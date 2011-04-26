@@ -170,7 +170,7 @@ void handleMove(Overlay * overlay, std::string point_id, double normalized_x, do
 
         obj_iter it;
         for(it = obj_list.begin(); it != obj_list.end(); it++)
-            if(it->isSelected())
+            if(it->isSelected() && it->getOverlayID().compare(overlay->getID()) == 0)
                 it->updateTransformations(state, newPosition[0], newPosition[1],
 		                                         oldPosition[0], oldPosition[1]);
 	}
@@ -275,7 +275,7 @@ void handleCustomMsg(int len, char *msg) {
 
             obj_iter it;
             for(it = obj_list.begin(); it != obj_list.end(); it++)
-                if(it->isSelected())
+                if(it->isSelected() && it->getOverlayID().compare(overlay->getID()) == 0)
                     it->updateTransformations(state, newPosition[0], newPosition[1],
                                                      oldPosition[0], oldPosition[1]);
         } else if(event.compare("OVERLAY_SCALE") == 0) {
@@ -283,7 +283,7 @@ void handleCustomMsg(int len, char *msg) {
         } else if(event.compare("SCALE") == 0) {
 	        obj_iter it;
 	        for(it = obj_list.begin(); it != obj_list.end(); it++)
-	            if(it->isSelected())
+	            if(it->isSelected() && it->getOverlayID().compare(overlay->getID()) == 0)
 	            	it->setTileSize(it->getWidth() * scale_factor, it->getHeight() * scale_factor);
         } else if(event.compare("MOVE") == 0) {
             handleMove(overlay, point_id, normalized_x, normalized_y);
