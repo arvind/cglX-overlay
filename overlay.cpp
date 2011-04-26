@@ -76,7 +76,8 @@ void Overlay::drawOverlayShape(bool sphere) {
 
 void Overlay::drawOverlay(void) {
 	glEnable(GL_BLEND);
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);	
+	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	
 	glPushMatrix();
 	glLoadIdentity();
 	glTranslatef(this->x, this->y, this->z);
@@ -87,14 +88,14 @@ void Overlay::drawOverlay(void) {
 	this->drawOverlayShape(false);
 	
 	// Then outline it
-	glColor4f(this->color[0], this->color[1], this->color[2], 0.4f);
+	glColor4f(this->color[0], this->color[1], this->color[2], 0.6f);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	glLineWidth( 3.0f );
+	glLineWidth( 5.0f );
 	this->drawOverlayShape(false);
 	
     // Then draw sphere if enabled
 	if(this->draw_sphere) {
-	    glColor4f(1.0f, 1.0f, 1.0f, 0.4f);
+	    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	    glLineWidth( 3.0f );
 	    glLineStipple(8, 0xAAAA);

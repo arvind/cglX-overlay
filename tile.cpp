@@ -103,7 +103,7 @@ void Tile::drawTile() {
 	glDisable(GL_TEXTURE_2D);
 
 	if(this->is_selected) { // Outline
-		glColor4f(1.0f, 1.0f, 0.0f, 1.0f);
+		glColor4f(1.0f, 1.0f, 0.0f, 0.65f);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glLineWidth( 2.0f );
 		glBegin(GL_QUADS);

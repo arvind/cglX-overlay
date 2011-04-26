@@ -100,7 +100,7 @@ void OverlayManager::checkSpheresOfInfluence(Overlay * overlay) {
     GLfloat boundingBoxWithSOI[4];
     overlay->getBoundingBoxWithSOI(boundingBoxWithSOI);
 
-    const GLfloat display_zone = 0.2f;
+    const GLfloat display_zone = 0.3f;
 
     for(overlay_iter it = this->overlays.begin(); it != this->overlays.end(); it++) {
         Overlay * o = (Overlay *) it->second;

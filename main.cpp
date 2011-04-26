@@ -27,13 +27,32 @@ typedef std::list<Tile>::iterator obj_iter;
 static int state;
 
 void init(void) {
-	Tile t0("Data/0.bmp", -1.5f, -1.2f, -6.0f, 2.0, 2.0);
-	Tile t1("Data/1.bmp",  1.5f, -1.2f, -6.0f, 2.0, 1.5);
-	Tile t2("Data/2.bmp",  0.0f,  1.2f, -6.0f, 2.0, 1.5);
+	Tile t0("Data/zebra.bmp", -2.0f, -1.10f, -6.0f, 2.5, 1.875);
+	Tile t3("Data/lion.bmp", 0.3f, -1.45f, -6.0f, 2.0, 1.5);
+	Tile t1("Data/tiger.bmp",  2.1f, -0.8f, -6.0f, 2.0, 1.5);
+	Tile t4("Data/giraffe.bmp", -2.0f, 1.1f, -6.0f, 2.0, 1.75);
+	Tile t2("Data/elephant.bmp",  0.5f,  1.5f, -6.0f, 2.5, 1.875);
+	Tile t5("Data/orangutan.bmp", 2.25f, 0.5f, -6.0f, 2.0, 1.5);
+	Tile t6("Data/tucan.bmp", -0.4f, 0.0f, -6.0f, 2.0, 1.5);
+	Tile t7("Data/cheetah.bmp", -2.3f, -0.70f, -4.0f, 2.5, 1.875);
+	Tile t8("Data/stork.bmp", 0.7f, -0.86f, -5.5f, 2.0, 1.5);
+	Tile t9("Data/fish.bmp",  1.23f, -1.36f, -3.5f, 2.0, 1.5);
+	Tile t10("Data/baboon.bmp", -1.67f, 1.75f, -7.5f, 2.0, 1.75);
+	Tile t11("Data/wilderbeest.bmp",  0.87f,  1.0f, -5.5f, 2.5, 1.875);
 
 	obj_list.push_back(t0);
 	obj_list.push_back(t1);
 	obj_list.push_back(t2);
+	obj_list.push_back(t3);
+	obj_list.push_back(t4);
+	obj_list.push_back(t5);
+	obj_list.push_back(t6);
+	obj_list.push_back(t7);
+	obj_list.push_back(t8);
+	obj_list.push_back(t9);
+	obj_list.push_back(t10);
+	obj_list.push_back(t11);
+
 
 //	GLfloat overlay_color[3] = {1.0f, 0.0f, 0.0f};
 //	overlay = overlay_manager.getOverlay("0");
@@ -98,7 +117,7 @@ void handleUpDown(Overlay * overlay, std::string pointID, GLint button, GLint bu
         if (button == GLUT_RIGHT_BUTTON)
             state |= ZOOM;
 
-	    overlay->addFinger(pointID, normalized_x, normalized_y, 0.05, 0.05);
+	    overlay->addFinger(pointID, normalized_x, normalized_y, 0.1, 0.1);
 
 	    GLfloat posInOverlay[2];
 	    overlay->getPosOfFinger(pointID, posInOverlay);
@@ -241,7 +260,10 @@ void handleCustomMsg(int len, char *msg) {
             GLfloat oldPosition[2];
             overlay->getPosOfFinger(point_id, oldPosition);
 
-            GLfloat overlay_x = ((normalized_x * getHeadWidth())  - (getHeadWidth()  / 2)) / 100.0f;
+            double normalized_x = root["normalizedX"].asDouble();
+            double normalized_y = root["normalizedY"].asDouble();
+
+            GLfloat overlay_x = ((normalized_x * getHeadWidth()) - (getHeadWidth() / 2)) / 100.0f;
             GLfloat overlay_y = -((normalized_y * getHeadHeight()) - (getHeadHeight() / 2)) / 100.0f;
 
             overlay_manager.setOverlayPos(overlay_id, overlay_x, overlay_y);
