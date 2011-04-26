@@ -13,10 +13,13 @@
 #define ZOOM                    2
 #define ROTATE                  3
 
+#include <string>
+
 class Tile {
 	private:
 		GLuint  texture;
 		char *  filename;
+		std::string overlay_id;
 
 		GLfloat x, y, z;       // Translation
 		GLfloat width, height; // Dimensions
@@ -32,6 +35,8 @@ class Tile {
 		GLfloat getZ();
 		GLfloat getWidth();
 		GLfloat getHeight();
+		std::string getOverlayID();
+		void setOverlayID(std::string overlay_id);
 
 		void setTileSize(GLfloat new_w, GLfloat new_h);
 

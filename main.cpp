@@ -128,15 +128,17 @@ void handleUpDown(Overlay * overlay, std::string pointID, GLint button, GLint bu
 	    bool intersected = false;
 	    for(it = obj_list.begin(); it != obj_list.end(); it++) {
 	        if(it->intersects(posInOverlay[0], posInOverlay[1]) && button_state == GLUT_DOWN) {
-	            if(modifiers & GLUT_ACTIVE_CTRL)
-	            	it->toggleSelected();
-	            else
+	            it->setOverlayID(overlay->getID());
+//	            if(modifiers & GLUT_ACTIVE_CTRL)
+//	            	it->toggleSelected();
+//	            else
 	            	it->setSelected(true);
 
 	            intersected_tile = it;
 	            intersected = true;
 	        } else {
-	            if((modifiers & GLUT_ACTIVE_CTRL) == 0)
+	            if(it->getOverlayID().compare(overlay->getID()) == 0)
+//	            if((modifiers & GLUT_ACTIVE_CTRL) == 0)
 	                it->setSelected(false);
 	        }
 	    }

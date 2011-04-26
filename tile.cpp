@@ -56,6 +56,14 @@ GLfloat Tile::getHeight() {
 	return this->height;
 }
 
+std::string Tile::getOverlayID() {
+    return this->overlay_id;
+}
+
+void Tile::setOverlayID(std::string id) {
+    this->overlay_id = id;
+}
+
 void Tile::setTileSize(GLfloat new_w, GLfloat new_h) {
 	this->width  = new_w;
 	this->height = new_h;
