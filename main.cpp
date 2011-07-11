@@ -250,11 +250,13 @@ void handleCustomMsg(int len, char *msg) {
         GLfloat overlay_w = overlay->getWidth();
         GLfloat overlay_h = overlay->getHeight();
 
-        double normalized_x = 0, normalized_y = 0, scale_factor = 1;
+        double normalized_x = 0, normalized_y = 0, scale_factor = 1, absolute = 1;
         if(root["normalizedX"].isDouble())
             normalized_x = root["normalizedX"].asDouble();
         if(root["normalizedY"].isDouble())
             normalized_y = root["normalizedY"].asDouble();
+        if(root["absolute"].isDouble())
+            absolute = root["absolute"].asDouble();
         if(root["scaleFactor"].isDouble())
             scale_factor += root["scaleFactor"].asDouble();
 
@@ -262,11 +264,15 @@ void handleCustomMsg(int len, char *msg) {
             GLfloat oldPosition[2];
             overlay->getPosOfFinger(point_id, oldPosition);
 
-            double normalized_x = root["normalizedX"].asDouble();
-            double normalized_y = root["normalizedY"].asDouble();
+            GLfloat overlay_x, overlay_y;
 
-            GLfloat overlay_x = ((normalized_x * getHeadWidth()) - (getHeadWidth() / 2)) / 100.0f;
-            GLfloat overlay_y = -((normalized_y * getHeadHeight()) - (getHeadHeight() / 2)) / 100.0f;
+            if(absolute == 1) {
+                overlay_x = ((normalized_x * getHeadWidth()) - (getHeadWidth() / 2)) / 100.0f;
+                overlay_y = -((normalized_y * getHeadHeight()) - (getHeadHeight() / 2)) / 100.0f;
+            } else {
+                overlay_x = overlay->getX() + normalized_x;
+                overlay_y = overlay->getY() + normalized_y;
+            }
 
             overlay_manager.setOverlayPos(overlay_id, overlay_x, overlay_y);
 

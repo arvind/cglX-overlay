@@ -97,45 +97,52 @@ void OverlayManager::drawOverlays() {
 }
 
 void OverlayManager::checkSpheresOfInfluence(Overlay * overlay) {
-    GLfloat boundingBoxWithSOI[4];
-    overlay->getBoundingBoxWithSOI(boundingBoxWithSOI);
+    GLfloat overlayBound[4];
+    overlay->getBoundingBoxWithSOI(overlayBound);
 
     const GLfloat display_zone = 0.3f;
 
     for(overlay_iter it = this->overlays.begin(); it != this->overlays.end(); it++) {
-        Overlay * o = (Overlay *) it->second;
+        Overlay * otherlay = (Overlay *) it->second;
 
-        GLfloat intersectBox[4];
-        o->getBoundingBoxWithSOI(intersectBox);
+        GLfloat otherlayBound[4];
+        otherlay->getBoundingBoxWithSOI(otherlayBound);
 
-        if(o->getID() == overlay->getID())
+        if(otherlay->getID() == overlay->getID())
             continue;
 
-        if(o->getFingers().size() > 0)    // If someone's working in their overlay,
+        if(otherlay->getFingers().size() > 0)    // If someone's working in their overlay,
             continue;                     // don't move it. That's just rude!
 
         GLfloat intersecting_values[4];
-        intersecting_values[0] = intersectBox[2] - boundingBoxWithSOI[0]; // iMaxX - minX
-        intersecting_values[1] = boundingBoxWithSOI[2] - intersectBox[0]; // maxX - iMinX
-        intersecting_values[2] = intersectBox[3] - boundingBoxWithSOI[1]; // iMaxY - minY
-        intersecting_values[3] = boundingBoxWithSOI[3] - intersectBox[1]; // maxY - iMinY
+        intersecting_values[0] = otherlayBound[2] - overlayBound[0]; // iMaxX - minX
+        intersecting_values[1] = overlayBound[2] - otherlayBound[0]; // maxX - iMinX
+        intersecting_values[2] = otherlayBound[0] - overlayBound[2]; // iMinX - maxX
+        intersecting_values[3] = overlayBound[0] - otherlayBound[2]; // minX - iMaxX
+
+        intersecting_values[4] = otherlayBound[3] - overlayBound[1]; // iMaxY - minY
+        intersecting_values[5] = overlayBound[3] - otherlayBound[1]; // maxY - iMinY
+        intersecting_values[6] = otherlayBound[1] - overlayBound[3]; // iMinY - maxY
+        intersecting_values[7] = overlayBound[1] - otherlayBound[3]; // minY - iMaxY
 
 
         // If two overlays are "close", show their spheres
-        if((abs(intersecting_values[0]) <= display_zone || abs(intersecting_values[1]) <= display_zone) &&
-           (abs(intersecting_values[2]) <= display_zone || abs(intersecting_values[3]) <= display_zone)) {
-            o->setDrawSphere(true);
+        if((abs(intersecting_values[0]) <= display_zone || abs(intersecting_values[1]) <= display_zone ||
+            abs(intersecting_values[2]) <= display_zone || abs(intersecting_values[3]) <= display_zone) &&
+           (abs(intersecting_values[4]) <= display_zone || abs(intersecting_values[5]) <= display_zone ||
+            abs(intersecting_values[6]) <= display_zone || abs(intersecting_values[7]) <= display_zone)) {
+            otherlay->setDrawSphere(true);
             overlay->setDrawSphere(true);
         } else {
-            o->setDrawSphere(false);
+            otherlay->setDrawSphere(false);
             overlay->setDrawSphere(false);
         }
 
         // First check intersection - to intersect they must intersect on both x and y axes
-        if(((boundingBoxWithSOI[0] > intersectBox[0] && boundingBoxWithSOI[0] < intersectBox[2]) ||
-            (boundingBoxWithSOI[2] > intersectBox[0] && boundingBoxWithSOI[2] < intersectBox[2])) &&
-           ((boundingBoxWithSOI[1] > intersectBox[1] && boundingBoxWithSOI[1] < intersectBox[3]) ||
-            (boundingBoxWithSOI[3] > intersectBox[1] && boundingBoxWithSOI[3] < intersectBox[3]))) {
+        if(((overlayBound[0] > otherlayBound[0] && overlayBound[0] < otherlayBound[2]) ||
+            (overlayBound[2] > otherlayBound[0] && overlayBound[2] < otherlayBound[2])) &&
+           ((overlayBound[1] > otherlayBound[1] && overlayBound[1] < otherlayBound[3]) ||
+            (overlayBound[3] > otherlayBound[1] && overlayBound[3] < otherlayBound[3]))) {
 
             // The direction to move o will be based on which of the four sides the smallest
             // intersecting area (> 0) is. We check the smallest intersecting area as this will
@@ -152,23 +159,23 @@ void OverlayManager::checkSpheresOfInfluence(Overlay * overlay) {
             }
 
             if(min_index == 0 || min_index == 1) {  // Smallest intersection along x-axis
-                GLfloat new_y = o->getY();
-                if(o->getY() < overlay->getY()) {
-                    new_y = boundingBoxWithSOI[1] - (2 * o->getSphereSize()) - (o->getHeight() / 2);
-                } else if(o->getY() > overlay->getY()) {
-                    new_y = boundingBoxWithSOI[3] + (2 * o->getSphereSize()) + (o->getHeight() / 2);
+                GLfloat new_y = otherlay->getY();
+                if(otherlay->getY() < overlay->getY()) {
+                    new_y = overlayBound[1] - (2 * otherlay->getSphereSize()) - (otherlay->getHeight() / 2);
+                } else if(otherlay->getY() > overlay->getY()) {
+                    new_y = overlayBound[3] + (2 * otherlay->getSphereSize()) + (otherlay->getHeight() / 2);
                 }
 
-                this->setOverlayPos(o->getID(), o->getX(), new_y);
+                this->setOverlayPos(otherlay->getID(), otherlay->getX(), new_y);
             } else {                                // Smallest intersection along y-axis
-                GLfloat new_x = o->getY();
-                if(o->getX() < overlay->getX()) {
-                    new_x = boundingBoxWithSOI[0] - (2 * o->getSphereSize()) - (o->getWidth() / 2);
-                } else if(o->getX() > overlay->getX()) {
-                    new_x = boundingBoxWithSOI[2] + (2 * o->getSphereSize()) + (o->getWidth() / 2);
+                GLfloat new_x = otherlay->getY();
+                if(otherlay->getX() < overlay->getX()) {
+                    new_x = overlayBound[0] - (2 * otherlay->getSphereSize()) - (otherlay->getWidth() / 2);
+                } else if(otherlay->getX() > overlay->getX()) {
+                    new_x = overlayBound[2] + (2 * otherlay->getSphereSize()) + (otherlay->getWidth() / 2);
                 }
 
-                this->setOverlayPos(o->getID(), new_x, o->getY());
+                this->setOverlayPos(otherlay->getID(), new_x, otherlay->getY());
             }
         }
     }
