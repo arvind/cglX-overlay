@@ -104,6 +104,7 @@ void handleDisplay(void) {
 
 void handleUpDown(Overlay * overlay, std::string pointID, GLint button, GLint button_state,
         double normalized_x, double normalized_y) {
+
 	if (cglXStartUpdate()) {
 	    if (button_state == GLUT_UP) {
 	        state = 0;
@@ -132,10 +133,10 @@ void handleUpDown(Overlay * overlay, std::string pointID, GLint button, GLint bu
 	    obj_iter it, intersected_tile;
 	    bool intersected = false;
 	    for(it = --(obj_list.end()); it != --(obj_list.begin()); it--) {
-	        if(it->intersects(posInOverlay[0], posInOverlay[1]) && button_state == GLUT_DOWN) {
+	        if(it->intersects(posInOverlay[0], posInOverlay[1]) && (button_state == GLUT_DOWN || button_state == 3)) {
 	            it->setOverlayID(overlay->getID());
 
-                it->toggleSelected();
+                it->setSelected(true);
 
 	            intersected_tile = it;
 	            intersected = true;
@@ -143,8 +144,7 @@ void handleUpDown(Overlay * overlay, std::string pointID, GLint button, GLint bu
 	            // Only select the top most tile
 	            break;
 	        } else {
-	            if(it->getOverlayID().compare(overlay->getID()) == 0)
-//	            if((modifiers & GLUT_ACTIVE_CTRL) == 0)
+	            if(it->getOverlayID().compare(overlay->getID()) == 0 && button_state != 3)
 	                it->setSelected(false);
 	        }
 	    }
@@ -257,7 +257,7 @@ void handleCustomMsg(int len, char *msg) {
         GLfloat overlay_w = overlay->getWidth();
         GLfloat overlay_h = overlay->getHeight();
 
-        double normalized_x = 0, normalized_y = 0, scale_factor = 1, absolute = 1;
+        double normalized_x = 0, normalized_y = 0, scale_factor = 1, absolute = 1, pinned = 0;
         if(root["normalizedX"].isDouble())
             normalized_x = root["normalizedX"].asDouble();
         if(root["normalizedY"].isDouble())
@@ -266,6 +266,8 @@ void handleCustomMsg(int len, char *msg) {
             absolute = root["absolute"].asDouble();
         if(root["scaleFactor"].isDouble())
             scale_factor += root["scaleFactor"].asDouble();
+        if(root["pinned"].isDouble())
+            pinned = root["pinned"].asDouble();
 
         if(event.compare("OVERLAY_MOVE") == 0) {
             GLfloat oldPosition[2];
@@ -304,7 +306,7 @@ void handleCustomMsg(int len, char *msg) {
         } else if(event.compare("MOVE") == 0) {
             handleMove(overlay, point_id, normalized_x, normalized_y);
         } else if(event.compare("DOWN") == 0) {
-            handleUpDown(overlay, point_id, GLUT_LEFT_BUTTON, GLUT_DOWN, normalized_x, normalized_y);
+            handleUpDown(overlay, point_id, GLUT_LEFT_BUTTON, pinned == 1 ? 3 : GLUT_DOWN, normalized_x, normalized_y);
         } else if(event.compare("UP") == 0) {
             handleUpDown(overlay, point_id, GLUT_LEFT_BUTTON, GLUT_UP, normalized_x, normalized_y);
         }

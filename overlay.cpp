@@ -172,7 +172,7 @@ void Overlay::removeFinger(std::string id) {
         return;
 
     finger_iter it = this->fingers.find(id);
-    if(it->first == id)
+    if(it != this->fingers.end())
         this->fingers.erase(it);
 }
 
@@ -182,7 +182,7 @@ std::map<std::string, Overlay::Finger *> Overlay::getFingers() {
 
 void Overlay::moveFinger(std::string id, GLfloat x, GLfloat y) {
     finger_iter it = this->fingers.find(id);
-    if(it->first == id) {
+    if(it != this->fingers.end()) {
         GLfloat f_width = it->second->getWidth();
         GLfloat f_height = it->second->getHeight();
         this->fingers.erase(it);
@@ -196,7 +196,7 @@ void Overlay::getPosOfFinger(std::string id, GLfloat * posInOverlay) {
         return;
 
     finger_iter it = this->fingers.find(id);
-    if(it->first == id)
+    if(it != this->fingers.end())
         it->second->getPosInOverlay(posInOverlay);
 }
 

@@ -74,7 +74,7 @@ void OverlayManager::removeOverlay(string overlay_id) {
         return;
 
     overlay_iter it = this->overlays.find(overlay_id);
-    if(it->first == overlay_id)
+    if(it != this->overlays.end())
         this->overlays.erase(it);
 }
 
