@@ -271,7 +271,10 @@ void handleCustomMsg(int len, char *msg) {
             GLfloat oldPosition[2];
             overlay->getPosOfFinger(point_id, oldPosition);
 
-            GLfloat overlay_x, overlay_y;
+            GLfloat overlay_old_x, overlay_old_y, overlay_x, overlay_y;
+
+            overlay_old_x = overlay->getX();
+            overlay_old_y = overlay->getY();
 
             if(absolute == 1) {
                 overlay_x = ((normalized_x * getHeadWidth()) - (getHeadWidth() / 2)) / 100.0f;
@@ -289,8 +292,8 @@ void handleCustomMsg(int len, char *msg) {
             obj_iter it;
             for(it = obj_list.begin(); it != obj_list.end(); it++)
                 if(it->isSelected() && it->getOverlayID().compare(overlay->getID()) == 0)
-                    it->updateTransformations(state, newPosition[0], newPosition[1],
-                                                     oldPosition[0], oldPosition[1]);
+                    it->updateTransformations(PAN, overlay_x, overlay_y,
+                                                   overlay_old_x, overlay_old_y);
         } else if(event.compare("OVERLAY_SCALE") == 0) {
             overlay_manager.setOverlaySize(overlay_id, overlay_w * scale_factor, overlay_h * scale_factor);
         } else if(event.compare("SCALE") == 0) {
