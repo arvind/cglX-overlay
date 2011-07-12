@@ -131,7 +131,7 @@ void handleUpDown(Overlay * overlay, std::string pointID, GLint button, GLint bu
 
 	    obj_iter it, intersected_tile;
 	    bool intersected = false;
-	    for(it = obj_list.begin(); it != obj_list.end(); it++) {
+	    for(it = --(obj_list.end()); it != --(obj_list.begin()); it--) {
 	        if(it->intersects(posInOverlay[0], posInOverlay[1]) && button_state == GLUT_DOWN) {
 	            it->setOverlayID(overlay->getID());
 
@@ -139,6 +139,9 @@ void handleUpDown(Overlay * overlay, std::string pointID, GLint button, GLint bu
 
 	            intersected_tile = it;
 	            intersected = true;
+
+	            // Only select the top most tile
+	            break;
 	        } else {
 	            if(it->getOverlayID().compare(overlay->getID()) == 0)
 //	            if((modifiers & GLUT_ACTIVE_CTRL) == 0)
