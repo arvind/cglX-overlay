@@ -119,6 +119,11 @@ void handleUpDown(Overlay * overlay, std::string pointID, GLint button, GLint bu
 
 	    overlay->addFinger(pointID, normalized_x, normalized_y, 0.1, 0.1);
 
+        // On overlay events, we get 5 touch down events fired so we don't want
+	    // to actually select a tile
+        if(overlay->getFingers().size() == 5)
+            return;
+
 	    GLfloat posInOverlay[2];
 	    overlay->getPosOfFinger(pointID, posInOverlay);
 
@@ -129,10 +134,8 @@ void handleUpDown(Overlay * overlay, std::string pointID, GLint button, GLint bu
 	    for(it = obj_list.begin(); it != obj_list.end(); it++) {
 	        if(it->intersects(posInOverlay[0], posInOverlay[1]) && button_state == GLUT_DOWN) {
 	            it->setOverlayID(overlay->getID());
-//	            if(modifiers & GLUT_ACTIVE_CTRL)
-//	            	it->toggleSelected();
-//	            else
-	            	it->setSelected(true);
+
+                it->toggleSelected();
 
 	            intersected_tile = it;
 	            intersected = true;
@@ -142,9 +145,10 @@ void handleUpDown(Overlay * overlay, std::string pointID, GLint button, GLint bu
 	                it->setSelected(false);
 	        }
 	    }
-	    // For overlapping images, push the selected image to the end
-	    // such that it renders "on top"
+
 	    if(intersected) {
+	        // For overlapping images, push the selected image to the end
+	        // such that it renders "on top"
 	        obj_list.erase(intersected_tile);
 	        obj_list.push_back(*intersected_tile);
 	    }
