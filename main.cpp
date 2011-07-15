@@ -129,14 +129,17 @@ void handleUpDown(Overlay * overlay, std::string pointID, GLint button, GLint bu
 	    overlay->getPosOfFinger(pointID, posInOverlay);
 
 	    GLint modifiers = glutGetModifiers();
-
+	    printf("button_state: %d\n", button_state);
 	    obj_iter it, intersected_tile;
 	    bool intersected = false;
 	    for(it = --(obj_list.end()); it != --(obj_list.begin()); it--) {
-	        if(it->intersects(posInOverlay[0], posInOverlay[1]) && (button_state == GLUT_DOWN || button_state == 3)) {
+	        if(it->intersects(posInOverlay[0], posInOverlay[1]) && (button_state == GLUT_DOWN || button_state == 3 || button_state == 4)) {
 	            it->setOverlayID(overlay->getID());
 
-                it->setSelected(true);
+	            if(button_state == 4)   // on a tap, toggle selection
+	                it->toggleSelected();
+	            else
+	                it->setSelected(true);
 
 	            intersected_tile = it;
 	            intersected = true;
@@ -257,7 +260,7 @@ void handleCustomMsg(int len, char *msg) {
         GLfloat overlay_w = overlay->getWidth();
         GLfloat overlay_h = overlay->getHeight();
 
-        double normalized_x = 0, normalized_y = 0, scale_factor = 1, absolute = 1, pinned = 0;
+        double normalized_x = 0, normalized_y = 0, scale_factor = 1, absolute = 1, pinned = 0, tap = 0;
         if(root["normalizedX"].isDouble())
             normalized_x = root["normalizedX"].asDouble();
         if(root["normalizedY"].isDouble())
@@ -268,6 +271,8 @@ void handleCustomMsg(int len, char *msg) {
             scale_factor += root["scaleFactor"].asDouble();
         if(root["pinned"].isDouble())
             pinned = root["pinned"].asDouble();
+        if(root["tap"].isDouble())
+            tap = root["tap"].asDouble();
 
         if(event.compare("OVERLAY_MOVE") == 0) {
             GLfloat oldPosition[2];
@@ -306,7 +311,7 @@ void handleCustomMsg(int len, char *msg) {
         } else if(event.compare("MOVE") == 0) {
             handleMove(overlay, point_id, normalized_x, normalized_y);
         } else if(event.compare("DOWN") == 0) {
-            handleUpDown(overlay, point_id, GLUT_LEFT_BUTTON, pinned == 1 ? 3 : GLUT_DOWN, normalized_x, normalized_y);
+            handleUpDown(overlay, point_id, GLUT_LEFT_BUTTON, pinned == 1 ? 3 : tap == 1 ? 4 : GLUT_DOWN, normalized_x, normalized_y);
         } else if(event.compare("UP") == 0) {
             handleUpDown(overlay, point_id, GLUT_LEFT_BUTTON, GLUT_UP, normalized_x, normalized_y);
         }
